@@ -1,0 +1,7 @@
+<div class="nav">
+    <button class="btn btn-outline-primary" routerLinkActive="selected" routerLink="home">Inicio</button>
+    <button *ngIf="!isLoggedIn" class="btn btn-outline-primary" routerLinkActive="selected" routerLink="login">Login</button>
+    <button *ngIf="!isLoggedIn" class="btn btn-outline-primary" routerLinkActive="selected" routerLink="register">Registro</button>
+    <button *ngIf="isLoggedIn" class="btn btn-outline-danger" (click)="logout()">Cerrar Sesión</button>    
+</div>
+<router-outlet />
