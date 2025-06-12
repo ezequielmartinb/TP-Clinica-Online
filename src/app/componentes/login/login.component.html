@@ -1,1 +1,43 @@
-<p>login works!</p>
+<h1>Inicia sesión</h1>
+
+<div class="contenedor-login">
+  <div class="formulario-login">
+    <form [formGroup]="formularioLogin" (ngSubmit)="login()">
+      <!-- Email -->
+      <input type="text" formControlName="mail" placeholder="Email" />
+      <div *ngIf="formularioLogin.get('mail')?.invalid && formularioLogin.get('mail')?.touched">
+        <small *ngIf="formularioLogin.get('mail')?.errors?.['required']">⚠ Debes ingresar un email.</small>
+        <small *ngIf="formularioLogin.get('mail')?.errors?.['email']">⚠ El formato del email es incorrecto.</small>
+      </div>
+
+      <!-- Contraseña -->
+      <input type="password" formControlName="password" placeholder="Password" />
+      <div *ngIf="formularioLogin.get('password')?.invalid && formularioLogin.get('password')?.touched">
+        <small *ngIf="formularioLogin.get('password')?.errors?.['required']">⚠ Debes ingresar una contraseña.</small>
+        <small *ngIf="formularioLogin.get('password')?.errors?.['minlength']">⚠ La contraseña debe tener al menos 6 caracteres.</small>
+      </div>
+
+      <!-- Botón + Spinner -->
+      <button class="btn btn-success" type="submit" [disabled]="formularioLogin.invalid || isLoading">
+        <ng-container *ngIf="!isLoading">Iniciar sesión</ng-container>
+        <ng-container *ngIf="isLoading">
+          <div class="spinner-btn"></div> Iniciando...
+        </ng-container>
+      </button>
+
+      <!-- Accesos rápidos -->
+      <button class="btn btn-link" type="button" (click)="quickAccessPaciente()">Acceso rápido paciente</button>
+      <button class="btn btn-link" type="button" (click)="quickAccessEspecialista()">Acceso rápido especialista</button>
+      <button class="btn btn-link" type="button" (click)="quickAccessAdmin()">Acceso rápido admin</button>
+    </form>
+
+    <!-- Error -->
+    <div class="error-msg">{{ errorMessage }}</div>
+  </div>
+</div>
+
+<!-- 🔹 Overlay que bloquea la página mientras `isLoading` está activo -->
+<div *ngIf="isLoading" class="overlay">
+  <div class="spinner"></div>
+  <p>Procesando...</p>
+</div>

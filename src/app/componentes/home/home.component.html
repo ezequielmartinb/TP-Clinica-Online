@@ -1,1 +1,7 @@
-<h1>Bienvenidos{{ mail ? ', ' + mail : '' }} a la Clinica Online</h1>
+<h1 *ngIf="!isLoading">Bienvenidos{{ mail ? ', ' + mail : '' }} a la Clínica Online</h1>
+
+<!-- 🔹 Spinner mientras se carga el email -->
+<div *ngIf="isLoading" class="spinner-container">
+    <div class="spinner"></div>
+    <p>Cargando usuario...</p>
+</div>

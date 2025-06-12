@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './componentes/home/home.component';
+import { ErrorComponent } from './componentes/error/error.component';
 
 export const routes: Routes = 
 [
@@ -19,5 +20,9 @@ export const routes: Routes =
     {
         path:'register',
         loadComponent: () => import('./componentes/register/register.component').then(r=> r.RegisterComponent)
+    },
+    {
+        path:'**',
+        component:ErrorComponent
     }
 ];

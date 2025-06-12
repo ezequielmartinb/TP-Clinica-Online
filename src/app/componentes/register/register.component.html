@@ -6,7 +6,7 @@
 <h1>Registrate</h1>
 <div class="contenedor-registro">
     <div class="formulario-registro">
-        <form [formGroup]="formularioRegistro">
+        <form [formGroup]="formularioRegistro" (ngSubmit)="register()">
             <input type="text" placeholder="Nombre" formControlName="nombre" class="register-input" />
             <div *ngIf="formularioRegistro.get('nombre')?.invalid">
                 <small *ngIf="formularioRegistro.get('nombre')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
@@ -76,14 +76,30 @@
                 </div>
             </div>
             <br>
-            <input type="file" (change)="onFileSelected($event, 'avatarFile')" class="register-input" />        
+            <input type="file" (change)="onFileSelected($event, 'avatarFile')" class="register-input" />
+            <div *ngIf="formularioRegistro.get('avatarFile')?.invalid">
+                <small *ngIf="formularioRegistro.get('avatarFile')?.errors?.['required']">⚠ Debes subir una imagen.</small>
+            </div>                               
             <br>
             <div *ngIf="formularioRegistro.get('tipo')?.value === 'paciente'">
-                <input type="file" (change)="onFileSelected($event, 'avatarFile2')" class="register-input" />  
+                <input type="file" (change)="onFileSelected($event, 'avatarFile2')" class="register-input"/>  
+                <div *ngIf="formularioRegistro.get('avatarFile2')?.invalid">
+                    <small *ngIf="formularioRegistro.get('avatarFile2')?.errors?.['required']">⚠ Debes subir una imagen.</small>
+                </div>                
             </div>
-            <button class="btn btn-success" (click)="register()">Registro</button>
+            <button class="btn btn-success" type="submit" [disabled]="formularioRegistro.invalid || isLoading">
+                <ng-container *ngIf="!isLoading">Registro</ng-container>
+                <ng-container *ngIf="isLoading">
+                  <div class="spinner-btn"></div> Registrando...
+                </ng-container>
+            </button>                     
         </form>   
     </div>     
 </div>
 <div class="error-msg">{{ errorMessage }}</div>
 <div class="error-msg">{{ message }}</div>
+
+<div *ngIf="isLoading" class="overlay">
+    <div class="spinner"></div>
+    <p>Procesando...</p>
+</div>
