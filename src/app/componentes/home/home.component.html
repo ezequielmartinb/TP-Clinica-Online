@@ -1,6 +1,10 @@
-<h1 *ngIf="!isLoading">Bienvenidos{{ mail ? ', ' + mail : '' }} a la Clínica Online</h1>
 
-<!-- 🔹 Spinner mientras se carga el email -->
+<title>Home</title>
+<h1 *ngIf="!isLoading">
+    Bienvenidos{{ rol ? ', ' + rol + ' ' + apellido + ' ' + nombre + ',' : '' }} a la Clínica Online
+</h1>
+
+<!-- 🔹 Spinner mientras se carga el usuario -->
 <div *ngIf="isLoading" class="spinner-container">
     <div class="spinner"></div>
     <p>Cargando usuario...</p>

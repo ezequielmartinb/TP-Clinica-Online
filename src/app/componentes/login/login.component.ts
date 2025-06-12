@@ -39,8 +39,9 @@ export class LoginComponent implements OnInit
 
   async login() 
   {
+    let user:any = null;
+    let rol:string = "";
     this.isLoading = true;
-
     this.message = '';
 
     try 
@@ -48,43 +49,10 @@ export class LoginComponent implements OnInit
       const email = this.formularioLogin.get('mail')?.value;
       const password = this.formularioLogin.get('password')?.value;
 
-      const { data: pacienteData } = await supabase
-          .from('pacientes')
-          .select('*')
-          .eq('mail', email)
-          .single();
-
-      const { data: especialistaData } = await supabase
-          .from('especialistas')
-          .select('*')
-          .eq('mail', email)
-          .single();
-
-      const { data: adminData } = await supabase
-          .from('administradores')
-          .select('*')
-          .eq('mail', email)
-          .single();
-      
-      if (!pacienteData && !especialistaData && !adminData) 
+      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword(
       {
-        this.errorMessage = '⚠ El usuario no está registrado.';
-        return;
-      }
-
-      const { data: authData, error: authError } = await supabase.auth.getUser();
-
-      if (authError || !authData?.user || !authData.user.email_confirmed_at) 
-      {
-        console.log(authError);
-            
-        this.errorMessage = '⚠ Debes confirmar tu correo antes de iniciar sesión.';
-        return;
-      }
-
-      const { error: loginError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+        email,
+        password,
       });
 
       if (loginError) 
@@ -93,21 +61,83 @@ export class LoginComponent implements OnInit
         return;
       }
 
+      const { data: sessionData } = await supabase.auth.getSession();
+
+      if (!sessionData.session) 
+      {
+        this.errorMessage = '⚠ No hay una sesión activa.';
+        return;
+      }
+
+      if (!sessionData.session.user?.email_confirmed_at) 
+      {
+        this.errorMessage = '⚠ Debes confirmar tu correo antes de iniciar sesión.';
+        return;
+      }
+
+      const { data: pacienteData } = await supabase
+          .from('pacientes')
+          .select('*')
+          .filter('mail', 'eq', email)
+          .single();
+      if (pacienteData) 
+      {
+        user = pacienteData;
+        rol = 'paciente';
+      }
+    
+
+      const { data: especialistaData } = await supabase
+          .from('especialistas')
+          .select('*')
+          .filter('mail', 'eq', email)
+          .single();
+
+      if (especialistaData) 
+      {
+        user = especialistaData;
+        rol = 'especialista';
+      }
+
+      const { data: adminData } = await supabase
+          .from('administradores')
+          .select('*')
+          .filter('mail', 'eq', email)
+          .single();
+
+      if (adminData) 
+      {
+        user = adminData;
+        rol = 'administrador';
+      }
+
+      localStorage.setItem('nombre', user.nombre);
+      localStorage.setItem('apellido', user.apellido);
+      localStorage.setItem('rol', rol);
+      localStorage.setItem('mail', email);
+
+
+      if (!pacienteData && !especialistaData && !adminData) 
+      {
+        this.errorMessage = '⚠ El usuario no está registrado.';
+        return;
+      }
+
       this.message = '✅ Inicio de sesión exitoso. Bienvenido!';
-      this.authService.setUsuario(this.mail);
+      this.authService.setUsuario(email);
       this.messageType = 'success';
       this.router.navigate(['/home']);
     } 
     catch (err) 
     {
       this.errorMessage = '⚠ Error inesperado al iniciar sesión.';
-    }
+    } 
     finally 
     {
       this.isLoading = false;
     }
-  
-  }  
+  }
+
   
   public quickAccessPaciente()
   {

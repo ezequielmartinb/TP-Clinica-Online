@@ -39,35 +39,32 @@ export class AppComponent
 
   async logout() 
   {
-    try {
-        // 🔹 Verificar si hay una sesión antes de cerrar
-        const { data: session } = await supabase.auth.getSession();
+    try 
+    {
+      const { data: session } = await supabase.auth.getSession();
 
-        if (!session?.session) {
-            console.warn("⚠ No hay una sesión activa.");
-            return;
-        }
+      if (!session?.session) 
+      {
+        console.warn("⚠ No hay una sesión activa.");
+        return;
+      }
 
-        // 🔹 Cerrar sesión en Supabase
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-            console.error("⚠ Error al cerrar sesión:", error.message);
-            return;
-        }
+      const { error } = await supabase.auth.signOut();
+      if (error) 
+      {
+        console.error("⚠ Error al cerrar sesión:", error.message);
+        return;
+      }
 
-        // 🔹 Actualizar estado de sesión
-        this.isLoggedIn = false;
-        this.authService.logout();
-
-        // 🔹 Detectar cambios en la vista para actualización inmediata
-        this.cd.detectChanges();
-
-        // 🔹 Redirigir al usuario a la página de login
-        this.router.navigate(['/login']);
+      this.isLoggedIn = false;
+      this.authService.logout();
+      this.cd.detectChanges();
+      this.router.navigate(['/login']);
 
     } 
-    catch (err) {
-        console.error("⚠ Error inesperado al cerrar sesión:", err);
+    catch (err) 
+    {
+      console.error("⚠ Error inesperado al cerrar sesión:", err);
     }
-}
+  }
 }

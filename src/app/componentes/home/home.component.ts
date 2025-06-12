@@ -13,6 +13,9 @@ const supabase = createClient(environment.apiUrl, environment.publicAnonKey)
 export class HomeComponent implements OnInit
 {
   isLoading:boolean = true;
+  nombre:string = "";
+  apellido:string = "";
+  rol:string = "";
   mail: string | undefined = undefined;
 
   async ngOnInit() 
@@ -21,6 +24,10 @@ export class HomeComponent implements OnInit
 
     if (data?.user) 
     {
+      this.nombre = localStorage.getItem('nombre') || '';
+      this.apellido = localStorage.getItem('apellido') || '';
+      this.rol = localStorage.getItem('rol') || '';
+
       this.mail = data.user.email;
       console.log("Email del usuario:", this.mail);
     }    
