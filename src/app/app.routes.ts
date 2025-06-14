@@ -18,8 +18,8 @@ export const routes: Routes =
         loadComponent: () => import('./componentes/login/login.component').then(l=> l.LoginComponent)
     },
     {
-        path:'register',
-        loadComponent: () => import('./componentes/register/register.component').then(r=> r.RegisterComponent)
+        path:'registro',
+        loadComponent: () => import('./componentes/registro/registro.component').then(r=> r.RegistroComponent)
     },
     {
         path:'**',

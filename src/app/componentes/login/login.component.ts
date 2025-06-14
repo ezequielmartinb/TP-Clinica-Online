@@ -1,21 +1,20 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AuthService } from '../../servicios/auth.service';
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
-import { Router } from '@angular/router';
-import { AuthService } from '../../servicios/auth.service';
-import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 const supabase = createClient(environment.apiUrl, environment.publicAnonKey)
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent implements OnInit
-{
+export class LoginComponent {
   mail:string = "";
   password:string = "";
   errorMessage:string="";
@@ -37,108 +36,77 @@ export class LoginComponent implements OnInit
     });  
   }
 
-  async login() 
-  {
-    let user:any = null;
-    let rol:string = "";
+  async login() {
+    this.errorMessage = '';
     this.isLoading = true;
-    this.message = '';
-
-    try 
-    {
+  
+    try {
       const email = this.formularioLogin.get('mail')?.value;
       const password = this.formularioLogin.get('password')?.value;
-
-      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword(
-      {
+  
+      // Autenticación en Supabase
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-
-      if (loginError) 
-      {
-        this.errorMessage = '⚠ Usuario o contraseña incorrectos.';
+  
+      if (error || !data?.user) {
+        this.errorMessage = '⚠ Email o contraseña incorrectos.';
         return;
       }
-
-      const { data: sessionData } = await supabase.auth.getSession();
-
-      if (!sessionData.session) 
-      {
-        this.errorMessage = '⚠ No hay una sesión activa.';
-        return;
+  
+      const userId = data.user.id;
+      const emailVerificado = data.user.email_confirmed_at;
+  
+      // Buscar usuario en la base de datos
+      let usuario;
+      let tipoUsuario = '';
+  
+      const { data: adminData } = await supabase.from('administradores').select('id').eq('id', userId).maybeSingle();
+      if (adminData) {
+        usuario = adminData;
+        tipoUsuario = 'admin';
       }
-
-      if (!sessionData.session.user?.email_confirmed_at) 
-      {
-        this.errorMessage = '⚠ Debes confirmar tu correo antes de iniciar sesión.';
-        return;
+  
+      const { data: pacienteData } = await supabase.from('pacientes').select('id').eq('id', userId).maybeSingle();
+      if (pacienteData) {
+        usuario = pacienteData;
+        tipoUsuario = 'paciente';
       }
-
-      const { data: pacienteData } = await supabase
-          .from('pacientes')
-          .select('*')
-          .filter('mail', 'eq', email)
-          .single();
-      if (pacienteData) 
-      {
-        user = pacienteData;
-        rol = 'paciente';
-      }
-    
-
-      const { data: especialistaData } = await supabase
-          .from('especialistas')
-          .select('*')
-          .filter('mail', 'eq', email)
-          .single();
-
+  
+      const { data: especialistaData } = await supabase.from('especialistas').select('id, aprobado').eq('id', userId).maybeSingle();
       if (especialistaData) 
       {
-        user = especialistaData;
-        rol = 'especialista';
+        usuario = especialistaData;
+        tipoUsuario = 'especialista';
+  
+        // Verificar que el especialista esté aprobado
+        if (!especialistaData.aprobado) 
+        {
+          this.errorMessage = '⚠ Tu cuenta debe ser aprobada por un administrador.';
+          return;
+        }
       }
-
-      const { data: adminData } = await supabase
-          .from('administradores')
-          .select('*')
-          .filter('mail', 'eq', email)
-          .single();
-
-      if (adminData) 
-      {
-        user = adminData;
-        rol = 'administrador';
-      }
-
-      localStorage.setItem('nombre', user.nombre);
-      localStorage.setItem('apellido', user.apellido);
-      localStorage.setItem('rol', rol);
-      localStorage.setItem('mail', email);
-
-
-      if (!pacienteData && !especialistaData && !adminData) 
-      {
-        this.errorMessage = '⚠ El usuario no está registrado.';
+  
+      if (!usuario) {
+        this.errorMessage = '⚠ Usuario no encontrado.';
         return;
       }
-
-      this.message = '✅ Inicio de sesión exitoso. Bienvenido!';
-      this.authService.setUsuario(email);
-      this.messageType = 'success';
-      this.router.navigate(['/home']);
+  
+      // Redirigir según el tipo de usuario
+      this.router.navigate(['/home']);  
     } 
-    catch (err) 
+    catch (error) 
     {
-      this.errorMessage = '⚠ Error inesperado al iniciar sesión.';
+      this.errorMessage = '⚠ Error al iniciar sesión.';
     } 
     finally 
     {
       this.isLoading = false;
     }
   }
-
   
+
   public quickAccessPaciente()
   {
     this.formularioLogin.patchValue({
@@ -161,6 +129,5 @@ export class LoginComponent implements OnInit
         mail: "ezequielmartinb10@gmail.com",
         password: "123456"
     });
-
   }
 }

@@ -1,0 +1,104 @@
+<title>Registro</title>
+<h1>Registro</h1>
+<div class="contenedor-botones">
+    <button class="btn" [ngClass]="botonActivo === 'paciente' ? 'btn-primary' : 'btn-outline-primary'" (click)="setTipo('paciente')">Paciente</button>  
+    <button class="btn" [ngClass]="botonActivo === 'especialista' ? 'btn-primary' : 'btn-outline-primary'" (click)="setTipo('especialista')">Especialista</button>
+</div>  
+
+<form *ngIf="tipoUsuario" [formGroup]="formularioRegistro" (ngSubmit)="register()">
+  <div class="contenedor-registro">
+    <div class="formulario-registro">
+      <input type="text" placeholder="Nombre" formControlName="nombre" class="register-input" />
+      <div *ngIf="formularioRegistro.get('nombre')?.invalid">
+        <small *ngIf="formularioRegistro.get('nombre')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+        <small *ngIf="formularioRegistro.get('nombre')?.errors?.['pattern']">⚠ Solo se permiten letras.</small>
+      </div>
+      <input type="text" placeholder="Apellido" formControlName="apellido" class="register-input" />
+      <div *ngIf="formularioRegistro.get('apellido')?.invalid">
+        <small *ngIf="formularioRegistro.get('apellido')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+        <small *ngIf="formularioRegistro.get('apellido')?.errors?.['pattern']">⚠ Solo se permiten letras.</small>
+      </div>
+
+      <input type="number" placeholder="Edad" formControlName="edad" class="register-input" />
+      <div *ngIf="formularioRegistro.get('edad')?.invalid">
+        <small *ngIf="formularioRegistro.get('edad')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+        <small *ngIf="formularioRegistro.get('edad')?.errors?.['min']">⚠ Debe ser mayor de 18 años.</small>
+        <small *ngIf="formularioRegistro.get('edad')?.errors?.['max']">⚠ Debe ser menor de 99 años.</small>
+      </div>
+
+      <input type="number" placeholder="DNI" formControlName="dni" class="register-input" />
+      <div *ngIf="formularioRegistro.get('dni')?.invalid">
+        <small *ngIf="formularioRegistro.get('dni')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+        <small *ngIf="formularioRegistro.get('dni')?.errors?.['pattern']">⚠ Debe contener 6 o 7 numeros.</small>
+      </div>
+
+      <input type="email" placeholder="Email" formControlName="mail" class="register-input" />
+      <div *ngIf="formularioRegistro.get('mail')?.invalid">
+        <small *ngIf="formularioRegistro.get('mail')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+        <small *ngIf="formularioRegistro.get('mail')?.errors?.['email']">⚠ Ingrese un mail valido.</small>
+      </div>
+
+      <input type="password" placeholder="Contraseña" formControlName="password" class="register-input" />
+      <div *ngIf="formularioRegistro.get('password')?.invalid">
+        <small *ngIf="formularioRegistro.get('password')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+        <small *ngIf="formularioRegistro.get('password')?.errors?.['minlength']">⚠ Debe ser mayor de 6 caracteres.</small>
+      </div>
+
+      <ng-container *ngIf="tipoUsuario === 'paciente'">
+        <label>Obra social:</label>
+        <select formControlName="obra_social" class="register-input">
+          <option value="osde">OSDE</option>
+          <option value="accord-salud">Accord Salud</option>
+          <option value="galeno">Galeno</option>
+        </select>
+        <div *ngIf="formularioRegistro.get('obra_social')?.invalid">
+            <small *ngIf="formularioRegistro.get('obra_social')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+        </div>
+        <input type="file" (change)="onFileSelected($event, 'imagen_perfil_1')" class="register-input" />
+        <div *ngIf="formularioRegistro.get('imagen_perfil_1')?.invalid">
+            <small *ngIf="formularioRegistro.get('imagen_perfil_1')?.errors?.['required']">⚠ Debes subir la primera imagen.</small>
+        </div>  
+        <input type="file" (change)="onFileSelected($event, 'imagen_perfil_2')" class="register-input" />
+        <div *ngIf="formularioRegistro.get('imagen_perfil_2')?.invalid">
+            <small *ngIf="formularioRegistro.get('imagen_perfil_2')?.errors?.['required']">⚠ Debes subir la segunda imagen.</small>
+        </div>  
+      </ng-container>
+
+      <ng-container *ngIf="tipoUsuario === 'especialista'">
+        <label>Especialidad:</label>
+        <select formControlName="especialidad" class="register-input">
+            <option *ngFor="let especialidad of especialidades" [value]="especialidad.id">
+              {{ especialidad.nombre }}
+            </option>
+        </select>        
+        <div *ngIf="formularioRegistro.get('especialidad')?.invalid">
+            <small *ngIf="formularioRegistro.get('especialidad')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+        </div>
+        <div class="agregar-especialidad">
+            <input type="text" placeholder="Nueva especialidad" formControlName="nueva_especialidad" class="register-input" />
+            <button class="btn btn-outline-success" (click)="agregarEspecialidad()">Agregar</button>
+        </div>
+        <div *ngIf="formularioRegistro.get('nueva_especialidad')?.invalid">
+            <small *ngIf="formularioRegistro.get('nueva_especialidad')?.errors?.['pattern']">⚠ Ingrese solo letras.</small>
+        </div>                           
+        <input type="file" (change)="onFileSelected($event, 'imagen_perfil')" class="register-input" />
+        <div *ngIf="formularioRegistro.get('imagen_perfil')?.invalid">
+            <small *ngIf="formularioRegistro.get('imagen_perfil')?.errors?.['required']">⚠ Debes subir una imagen.</small>
+        </div>  
+      </ng-container>      
+      <br>
+      <button class="btn btn-success" type="submit" [disabled]="formularioRegistro.invalid || isLoading">
+        <ng-container *ngIf="!isLoading">Registrarse</ng-container>
+        <ng-container *ngIf="isLoading">
+          <div class="spinner-btn"></div> Registrando...
+        </ng-container>
+    </button> 
+    </div>
+  </div>
+</form>
+<div class="error-msg">{{ errorMessage }}</div>
+<div class="error-msg">{{ message }}</div>
+<div *ngIf="isLoading" class="overlay">
+    <div class="spinner"></div>
+    <p>Procesando...</p>
+</div>

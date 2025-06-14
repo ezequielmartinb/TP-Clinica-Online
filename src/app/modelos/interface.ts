@@ -6,7 +6,7 @@ export interface Usuario
     edad: number;
     dni: string;
     mail: string;
-    contraseña: string;
+    contrasena: string;
     imagen_perfil?: string;
 }
 
@@ -25,4 +25,9 @@ export interface Especialista extends Usuario
 export interface Administrador extends Usuario 
 {
 
+}
+export interface Especialidades
+{
+    id: number,
+    nombre: string
 }
