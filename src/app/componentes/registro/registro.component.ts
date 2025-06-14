@@ -33,6 +33,7 @@ export class RegistroComponent implements OnInit
     obra_social: '',
     imagen_perfil_1: '',
     imagen_perfil_2: '',
+    aprobado: true
   };
 
   especialista: Especialista = {
@@ -45,6 +46,7 @@ export class RegistroComponent implements OnInit
     contrasena: '',
     especialidad: '',
     imagen_perfil: '',
+    aprobado: true
   };
   message:string = '';
   messageType: 'success' | 'error' = 'success';
@@ -261,6 +263,7 @@ export class RegistroComponent implements OnInit
         mail: this.formularioRegistro.get('mail')?.value,
         contrasena: this.formularioRegistro.get('password')?.value,
         imagen_perfil: imagenPerfilUrl,
+        aprobado:true
       };
   
       // Insertar en la tabla correspondiente
@@ -285,6 +288,7 @@ export class RegistroComponent implements OnInit
           ...usuarioData,
           especialidad: this.formularioRegistro.get('especialidad')?.value,
         };
+        this.especialista.aprobado = false;
         await supabase.from('especialistas').insert([this.especialista]);
       }
   

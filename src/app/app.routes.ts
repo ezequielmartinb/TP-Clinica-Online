@@ -22,6 +22,10 @@ export const routes: Routes =
         loadComponent: () => import('./componentes/registro/registro.component').then(r=> r.RegistroComponent)
     },
     {
+        path:'admin/usuarios',
+        loadComponent: () => import('./componentes/seccion-usuarios/seccion-usuarios.component').then(r=> r.SeccionUsuariosComponent)
+    },
+    {
         path:'**',
         component:ErrorComponent
     }

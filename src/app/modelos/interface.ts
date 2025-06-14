@@ -8,6 +8,7 @@ export interface Usuario
     mail: string;
     contrasena: string;
     imagen_perfil?: string;
+    aprobado: boolean;
 }
 
 export interface Paciente extends Usuario 

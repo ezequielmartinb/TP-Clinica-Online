@@ -1,9 +1,9 @@
 
 <title>Home</title>
-<h1>Bienvenidos a la Clínica Online</h1>
-
+<h1>Bienvenidos a la Clínica Online</h1>  
 <div class="contenedor-botones">
-    <button class="btn btn-outline-primary" routerLink="/login">Login</button>
-    <button class="btn btn-outline-primary" routerLink="/registro">Registro</button>
+    <button class="btn btn-outline-primary" *ngIf="!usuarioAutenticado" routerLink="/login">Login</button>
+    <button class="btn btn-outline-primary" *ngIf="!usuarioAutenticado" routerLink="/registro">Registro</button>
+    <button class="btn btn-outline-primary" *ngIf="isAdmin" (click)="irASeccionUsuarios()">Sección Usuarios</button>
 </div>
   

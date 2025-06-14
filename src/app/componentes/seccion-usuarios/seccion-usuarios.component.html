@@ -1,0 +1,39 @@
+<title>Sección usuarios</title>
+
+<div class="table-responsive">
+    <table>
+        <div *ngIf="cargando" class="spinner-container">
+            <div class="spinner"></div>
+            <p>Cargando datos...</p>
+        </div>  
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Edad</th>
+            <th>DNI</th>
+            <th>Email</th>
+            <th>Aprobado</th>
+            <th>Foto de perfil</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let usuario of usuarios">
+            <td>{{ usuario.nombre }}</td>
+            <td>{{ usuario.apellido }}</td>
+            <td>{{ usuario.edad }}</td>
+            <td>{{ usuario.dni }}</td>
+            <td>{{ usuario.mail }}</td>
+            <td>
+                <button 
+                  [ngClass]="usuario.aprobado ? 'btn-habilitado' : 'btn-deshabilitado'">
+                  {{ usuario.aprobado ? 'Habilitado' : 'No habilitado' }}
+                </button>
+              </td>              
+            <td>
+              <img *ngIf="usuario.imagen_perfil" [src]="usuario.imagen_perfil" alt="Perfil" width="50">
+            </td>
+          </tr>
+        </tbody>
+    </table>
+</div>
