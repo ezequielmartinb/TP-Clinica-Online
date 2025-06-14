@@ -94,7 +94,8 @@ export class AppComponent
 
   async logout() {
     try {
-      const { data: session } = await supabase.auth.getSession();
+      const { data: session, error:sessionError } = await supabase.auth.getSession();
+      console.log("Datos de sesión:", session, sessionError);
       if (!session?.session) {
         console.warn("⚠ No hay una sesión activa.");
         return;

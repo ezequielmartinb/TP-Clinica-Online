@@ -35,9 +35,8 @@
             <td>{{ usuario.dni | dni}}</td>
             <td>{{ usuario.mail }}</td>
             <td>
-                <button 
-                  [ngClass]="usuario.aprobado ? 'btn-habilitado' : 'btn-deshabilitado'">
-                  {{ usuario.aprobado ? 'Habilitado' : 'No habilitado' }}
+                <button [ngClass]="usuario.aprobado ? 'btn-habilitado' : 'btn-deshabilitado'" (click)="habilitarUsuario(usuario)">
+                  {{ usuario.aprobado ? 'Habilitado' : 'No habilitado' }} 
                 </button>
               </td>              
             <td>

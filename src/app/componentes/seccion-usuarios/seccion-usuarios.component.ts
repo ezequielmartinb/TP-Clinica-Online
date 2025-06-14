@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Usuario } from '../../modelos/interface';
+import { Administrador, Especialista, Paciente, Usuario } from '../../modelos/interface';
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { FormsModule } from '@angular/forms';
@@ -61,6 +61,37 @@ export class SeccionUsuariosComponent implements OnInit
     if ('es_admin' in usuario || usuario.rol === 'admin') return 'administrador';
     return 'Desconocido';
   }
+  obtenerTablaPorTipo(usuario: any): string 
+  {
+    if (usuario.obra_social) return 'pacientes';
+    if (usuario.especialidad) return 'especialistas';
+    return 'administradores';
+  }
   
+  async habilitarUsuario(usuario:Paciente | Especialista | Administrador)
+  {
+    try 
+    {
+      console.log(`✅ Cambiando estado de aprobación para ${usuario.mail}...`);
+  
+      const nuevoEstado = !usuario.aprobado;      
+      const tabla = this.obtenerTablaPorTipo(usuario);
+      console.log(tabla);      
+  
+      const { error } = await supabase
+        .from(tabla)
+        .update({ aprobado: nuevoEstado })
+        .eq('id', usuario.id);
+  
+      if (error) throw error;
+  
+      console.log(`✅ Estado actualizado correctamente para ${usuario.mail}`);
+      usuario.aprobado = nuevoEstado;
+    } 
+    catch (err) 
+    {
+      console.error("⚠ Error al actualizar estado de usuario:", err);
+    }  
+  }  
 
 }
