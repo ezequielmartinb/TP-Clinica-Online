@@ -1,15 +1,25 @@
 <title>Sección usuarios</title>
+<h1>Listado de usuarios</h1>
+<div *ngIf="cargando" class="spinner-container">
+  <div class="spinner"></div>
+  <p>Cargando datos...</p>
+</div> 
+<div class="d-flex gap-2 mb-3 align-items-center" *ngIf="!cargando">
+  <label for="campo">Buscar por:</label>
+  <select [(ngModel)]="campoSeleccionado" id="campo" class="form-select w-auto">
+    <option *ngFor="let campo of camposDisponibles" [value]="campo.clave">
+      {{ campo.etiqueta }}
+    </option>
+  </select>
 
-<div class="table-responsive">
-    <table>
-        <div *ngIf="cargando" class="spinner-container">
-            <div class="spinner"></div>
-            <p>Cargando datos...</p>
-        </div>  
+  <input type="text" [(ngModel)]="filtro" class="form-control" placeholder="Escribí para filtrar..." />
+</div>
+<div class="table-responsive" *ngIf="!cargando">
+    <table>         
         <thead>
           <tr>
-            <th>Nombre</th>
             <th>Apellido</th>
+            <th>Nombre</th>
             <th>Edad</th>
             <th>DNI</th>
             <th>Email</th>
@@ -18,11 +28,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let usuario of usuarios">
-            <td>{{ usuario.nombre }}</td>
+          <tr *ngFor="let usuario of usuarios | filtro: filtro : campoSeleccionado | ordenar" [appDirectivaColorRol]="obtenerTipoClase(usuario)">
             <td>{{ usuario.apellido }}</td>
+            <td>{{ usuario.nombre }}</td>
             <td>{{ usuario.edad }}</td>
-            <td>{{ usuario.dni }}</td>
+            <td>{{ usuario.dni | dni}}</td>
             <td>{{ usuario.mail }}</td>
             <td>
                 <button 
@@ -31,8 +41,10 @@
                 </button>
               </td>              
             <td>
-              <img *ngIf="usuario.imagen_perfil" [src]="usuario.imagen_perfil" alt="Perfil" width="50">
-            </td>
+              <img *ngIf="usuario.imagen_perfil" [src]="usuario.imagen_perfil" 
+                    alt="Foto de {{ usuario.nombre }}" 
+                    appDirectivaZoomFotos class="img-perfil">
+            </td>      
           </tr>
         </tbody>
     </table>

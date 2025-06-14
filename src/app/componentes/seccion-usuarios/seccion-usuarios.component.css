@@ -72,6 +72,16 @@
     height: 200px; /* Ajusta la altura según el espacio disponible */
     text-align: center;
   }
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    flex-direction: column;
+  }
   
   .spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);
