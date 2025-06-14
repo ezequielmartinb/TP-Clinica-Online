@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../servicios/auth.service';
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
+import { Administrador, Especialidades, Especialista, Paciente, Usuario } from '../../modelos/interface';
 
 const supabase = createClient(environment.apiUrl, environment.publicAnonKey)
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -22,6 +23,10 @@ export class LoginComponent {
   messageType:string="";
   formularioLogin!:FormGroup;  
   isLoading:boolean = false;
+  pacientes:Paciente[] = [];
+  especialistas:Especialista[] = [];
+  administrador:Administrador | undefined;
+  isLoadingUsuarios = false;
 
   constructor(private router: Router, private authService: AuthService) 
   {
@@ -33,7 +38,8 @@ export class LoginComponent {
     {
       mail: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)])
-    });  
+    });
+    this.cargarUsuarios();   
   }
 
   async login() {
@@ -105,29 +111,42 @@ export class LoginComponent {
       this.isLoading = false;
     }
   }
+  async obtenerUsuarios<T>(tabla: string, limite: number): Promise<T[]> {
+    const { data, error } = await supabase
+      .from(tabla)
+      .select('*')
+      .limit(limite);
+  
+    if (error) {
+      console.error(`Error obteniendo usuarios de ${tabla}:`, error);
+      return [];
+    }
+  
+    return data as T[];
+  }
+  
+  async cargarUsuarios() 
+  {
+    this.isLoadingUsuarios = true;
+    this.pacientes = await this.obtenerUsuarios<Paciente>('pacientes', 3);
+    this.especialistas = await this.obtenerUsuarios<Especialista>('especialistas', 2);
+    this.administrador = (await this.obtenerUsuarios<Administrador>('administradores', 1))[0];
+  
+    console.log('Pacientes:', this.pacientes);
+    console.log('Especialistas:', this.especialistas);
+    console.log('Administrador:', this.administrador);
+    this.isLoadingUsuarios = false;
+  }
   
 
-  public quickAccessPaciente()
+  public quickAccess(usuario: Usuario) 
   {
-    this.formularioLogin.patchValue({
-      mail: "ezequielmartinb10@gmail.com",
-      password: "123456"
-  });
-
-  }
-  public quickAccessEspecialista()
-  {
-    this.formularioLogin.patchValue({
-        mail: "ezequielmartinb10@gmail.com",
-        password: "123456"
+    this.formularioLogin.patchValue(
+    {
+      mail: usuario.mail,
+      password: usuario.contrasena
     });
-
-  }
-  public quickAccessAdmin()
-  {
-    this.formularioLogin.patchValue({
-        mail: "ezequielmartinb10@gmail.com",
-        password: "123456"
-    });
-  }
+  
+    console.log(`Acceso rápido a: ${usuario.nombre} ${usuario.apellido}`);
+  }    
 }

@@ -1,13 +1,20 @@
 <title>Registro</title>
-<h1>Registro</h1>
-<div class="contenedor-botones">
-    <button class="btn" [ngClass]="botonActivo === 'paciente' ? 'btn-primary' : 'btn-outline-primary'" (click)="setTipo('paciente')">Paciente</button>  
-    <button class="btn" [ngClass]="botonActivo === 'especialista' ? 'btn-primary' : 'btn-outline-primary'" (click)="setTipo('especialista')">Especialista</button>
+<h1 *ngIf="!tipoUsuario">Registro</h1>
+<h1 *ngIf="tipoUsuario">Registro de {{ tipoUsuario | lowercase }}</h1>
+<div *ngIf="isLoadingImagenes" class="overlay">
+  <div class="spinner"></div>
+  <p>Cargando...</p>
+</div>
+<div *ngIf="!isLoadingImagenes" class="contenedor-botones">
+    <button class="btn" [ngClass]="botonActivo === 'paciente' ? 'btn-primary' : 'btn-outline-primary'" (click)="setTipo('paciente')"><img [src]="urlImagenPaciente" class="profile-img" />
+    </button>  
+    <button class="btn" [ngClass]="botonActivo === 'especialista' ? 'btn-primary' : 'btn-outline-primary'" (click)="setTipo('especialista')"><img [src]="urlImagenEspecialista" class="profile-img" />
+    </button>  
 </div>  
 
 <form *ngIf="tipoUsuario" [formGroup]="formularioRegistro" (ngSubmit)="register()">
   <div class="contenedor-registro">
-    <div class="formulario-registro">
+    <div class="formulario-registro">      
       <input type="text" placeholder="Nombre" formControlName="nombre" class="register-input" />
       <div *ngIf="formularioRegistro.get('nombre')?.invalid">
         <small *ngIf="formularioRegistro.get('nombre')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
@@ -92,7 +99,7 @@
         <ng-container *ngIf="isLoading">
           <div class="spinner-btn"></div> Registrando...
         </ng-container>
-    </button> 
+      </button> 
     </div>
   </div>
 </form>

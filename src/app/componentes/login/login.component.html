@@ -17,20 +17,34 @@
         <small *ngIf="formularioLogin.get('password')?.errors?.['minlength']">⚠ La contraseña debe tener al menos 6 caracteres.</small>
       </div>
 
-      <!-- Botón + Spinner -->
-      <button class="btn btn-success" type="submit" [disabled]="formularioLogin.invalid || isLoading">
-        <ng-container *ngIf="!isLoading">Iniciar sesión</ng-container>
-        <ng-container *ngIf="isLoading">
-          <div class="spinner-btn"></div> Iniciando...
-        </ng-container>
-      </button>
-
+      <!-- Botón Iniciar Sesion-->
+      <button class="btn btn-success" type="submit" [disabled]="formularioLogin.invalid || isLoading">Iniciar sesión</button>
       <!-- Accesos rápidos -->
-      <button class="btn btn-link" type="button" (click)="quickAccessPaciente()">Acceso rápido paciente</button>
-      <button class="btn btn-link" type="button" (click)="quickAccessEspecialista()">Acceso rápido especialista</button>
-      <button class="btn btn-link" type="button" (click)="quickAccessAdmin()">Acceso rápido admin</button>
+      <div *ngIf="isLoadingUsuarios" class="overlay">
+        <div class="spinner"></div>
+        <p>Cargando...</p>
+      </div>
+      <div *ngIf="!isLoadingUsuarios">
+        <div *ngFor="let paciente of pacientes; let i = index">
+          <button class="btn btn-outline-primary quick-btn" (click)="quickAccess(paciente)">
+            <img [src]="paciente.imagen_perfil" alt="Foto de {{ paciente.nombre }}" class="profile-img" />
+            Acceso rápido a paciente {{ i + 1 }}
+          </button>
+        </div>       
+        <div *ngFor="let especialista of especialistas; let i = index">
+          <button class="btn btn-outline-primary quick-btn" (click)="quickAccess(especialista)">
+            <img [src]="especialista.imagen_perfil" alt="Foto de {{ especialista.nombre }}" class="profile-img" />
+            Acceso rápido a especialista {{ i + 1 }}
+          </button>
+        </div>       
+        <div *ngIf="administrador">
+          <button class="btn btn-outline-primary" (click)="quickAccess(administrador)">
+            <img [src]="administrador.imagen_perfil" alt="Foto de {{ administrador.nombre }}" class="profile-img" />
+            Acceso rápido administrador
+          </button>
+        </div>    
+      </div>
     </form>
-
     <!-- Error -->
     <div class="error-msg">{{ errorMessage }}</div>
   </div>
@@ -39,5 +53,5 @@
 <!-- 🔹 Overlay que bloquea la página mientras `isLoading` está activo -->
 <div *ngIf="isLoading" class="overlay">
   <div class="spinner"></div>
-  <p>Procesando...</p>
+  <p>Iniciando sesion...</p>
 </div>

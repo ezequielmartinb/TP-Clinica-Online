@@ -52,6 +52,9 @@ export class RegistroComponent implements OnInit
   messageType: 'success' | 'error' = 'success';
   errorMessage:string = '';
   isLoading:boolean = false;
+  urlImagenPaciente:string="";
+  urlImagenEspecialista:string="";
+  isLoadingImagenes: boolean = true;
 
 
   constructor(private fb: FormBuilder) 
@@ -62,6 +65,8 @@ export class RegistroComponent implements OnInit
   async ngOnInit() 
   {
     await this.obtenerEspecialidades();
+    await this.cargarImagen("paciente", "paciente");
+    await this.cargarImagen("especialista", "especialista")
   }
 
   async obtenerEspecialidades() 
@@ -300,6 +305,32 @@ export class RegistroComponent implements OnInit
       this.isLoading = false;
     }
   }
+  async obtenerImagenPerfil(nombreArchivo: string): Promise<string> 
+  {
+    const { data } = supabase.storage.from('imagenbotones').getPublicUrl(nombreArchivo);
+  
+    if (!data.publicUrl) 
+    {
+      console.error('Error: No se pudo obtener la URL pública.');
+      return '';
+    }
+  
+    return data.publicUrl;
+  }  
+  async cargarImagen(imagen: string, tipo: 'paciente' | 'especialista') {
+    const url = await this.obtenerImagenPerfil(imagen + ".png");
+  
+    if (tipo === 'paciente') {
+      this.urlImagenPaciente = url;
+    } else if (tipo === 'especialista') {
+      this.urlImagenEspecialista = url;
+    }
+    this.isLoadingImagenes = false
+    console.log(`URL de ${tipo}:`, url);
+  }
+  
+  
+
   private getErrorMessage(rawMsg: string): string {
     const messages: Record<string, string> = {
       'Password should be at least 6 characters.': 'La contraseña debe tener al menos 6 caracteres',

@@ -8,7 +8,7 @@ const supabase = createClient(environment.apiUrl, environment.publicAnonKey)
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
