@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Especialista, Paciente, Especialidades, Usuario } from '../../modelos/interface';
+import { Especialista, Paciente, Especialidades, Usuario, Administrador } from '../../modelos/interface';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
@@ -49,6 +49,17 @@ export class RegistroComponent implements OnInit
     imagen_perfil: '',
     aprobado: true
   };
+  administrador: Administrador = {
+    id: '',
+    nombre: '',
+    apellido: '',
+    edad: 0,
+    dni: '',
+    mail: '',
+    contrasena: '',
+    imagen_perfil: '',
+    aprobado: true
+  };
   message:string = '';
   messageType: 'success' | 'error' = 'success';
   errorMessage:string = '';
@@ -71,6 +82,7 @@ export class RegistroComponent implements OnInit
     await this.cargarImagen("paciente", "paciente");
     await this.cargarImagen("especialista", "especialista");
     await this.cargarImagen("administrador", "administrador");
+    await supabase.auth.signOut();
     console.log(this.rol);
     
   }
@@ -147,6 +159,10 @@ export class RegistroComponent implements OnInit
       this.formularioRegistro.addControl('imagen_perfil', new FormControl('', Validators.required));
       this.formularioRegistro.addControl('especialidad', new FormControl('', Validators.required));
     }
+    else
+    {
+      this.formularioRegistro.addControl('imagen_perfil', new FormControl('', Validators.required));
+    }
   }
 
   async subirFoto(file: File, bucketName: string, userId: string): Promise<string> 
@@ -192,8 +208,9 @@ export class RegistroComponent implements OnInit
       const imagenPerfil1 = this.formularioRegistro.get('imagen_perfil_1')?.value;
       const imagenPerfil2 = this.formularioRegistro.get('imagen_perfil_2')?.value;
       const imagenPerfilEspecialista = this.formularioRegistro.get('imagen_perfil')?.value;
-  
+      const imagenPerfilAdministrador = this.formularioRegistro.get('imagen_perfil')?.value;   
       
+      console.log(imagenPerfilAdministrador);      
   
       if (this.tipoUsuario=== 'paciente') {
         if (!imagenPerfil1) {
@@ -215,7 +232,6 @@ export class RegistroComponent implements OnInit
           return;
         }
       }
-      // ✅ Validaciones para ESPECIALISTA
       if (this.tipoUsuario === 'especialista') {
         if (!imagenPerfilEspecialista) {
           this.errorMessage = '⚠ Debes subir una imagen de perfil.';
@@ -227,14 +243,27 @@ export class RegistroComponent implements OnInit
           return;
         }
       }     
+      if (this.tipoUsuario === 'administrador') {
+        if (!imagenPerfilAdministrador) {
+          this.errorMessage = '⚠ Debes subir una imagen de perfil.';
+          return;
+        }
+
+        if (!formatosPermitidos.includes(imagenPerfilAdministrador.type)) {
+          this.errorMessage = '⚠ La imagen de perfil debe ser PNG o JPEG.';
+          return;
+        }
+      }   
   
       // Verificar si el email ya está registrado
       const email = this.formularioRegistro.get('mail')?.value;
-      const { data: pacienteData } = await supabase.from('pacientes').select('id').eq('mail', email).single();
-      const { data: especialistaData } = await supabase.from('especialistas').select('id').eq('mail', email).single();
+      const { data: pacienteData } = await supabase.from('pacientes').select('id').eq('mail', email).maybeSingle();
+      const { data: especialistaData } = await supabase.from('especialistas').select('id').eq('mail', email).maybeSingle();
+      const { data: administradorData } = await supabase.from('administradores').select('id').eq('mail', email).maybeSingle();
   
-      if (pacienteData || especialistaData) {
+      if (pacienteData || especialistaData || administradorData) {
         this.errorMessage = '⚠ Este email ya está registrado.';
+        this.isLoading = false;
         return;
       }
   
@@ -262,6 +291,10 @@ export class RegistroComponent implements OnInit
       else if(this.tipoUsuario === 'especialista' && imagenPerfilEspecialista) 
       {
        imagenPerfilUrl = await this.subirFoto(imagenPerfilEspecialista, 'avatars', userId);       
+      }
+      else 
+      {
+        imagenPerfilUrl = await this.subirFoto(imagenPerfilAdministrador, 'avatars', userId);       
       }
   
       // Crear objeto de usuario
@@ -301,6 +334,16 @@ export class RegistroComponent implements OnInit
         };
         this.especialista.aprobado = false;
         await supabase.from('especialistas').insert([this.especialista]);
+        
+      }
+      else
+      {
+        this.administrador =
+        {
+          ...usuarioData,
+        }
+        console.log(this.administrador.imagen_perfil);        
+        await supabase.from('administradores').insert([this.administrador]);
       }
   
       this.message = 'Registro exitoso. ¡Bienvenido!';
@@ -336,7 +379,7 @@ export class RegistroComponent implements OnInit
       this.urlImagenAdministrador = url;
     }
     this.isLoadingImagenes = false
-    console.log(`URL de ${tipo}:`, url);
+    // console.log(`URL de ${tipo}:`, url);
   }
   
   

@@ -96,6 +96,13 @@
             <small *ngIf="formularioRegistro.get('imagen_perfil')?.errors?.['required']">⚠ Debes subir una imagen.</small>
         </div>  
       </ng-container>      
+      <ng-container *ngIf="tipoUsuario === 'administrador'">
+        
+        <input type="file" (change)="onFileSelected($event, 'imagen_perfil')" class="register-input" />
+        <div *ngIf="formularioRegistro.get('imagen_perfil')?.invalid">
+            <small *ngIf="formularioRegistro.get('imagen_perfil')?.errors?.['required']">⚠ Debes subir una imagen.</small>
+        </div>  
+      </ng-container>
       <br>
       <button class="btn btn-success" type="submit" [disabled]="formularioRegistro.invalid || isLoading">
         <ng-container *ngIf="!isLoading">Registrarse</ng-container>
