@@ -13,6 +13,7 @@
   </select>
 
   <input type="text" [(ngModel)]="filtro" class="form-control" placeholder="Escribí para filtrar..." />
+  <button class="btn btn-primary" (click)="irRegistro()">Registrar nuevo usuario</button>
 </div>
 <div class="table-responsive" *ngIf="!cargando">
     <table>         

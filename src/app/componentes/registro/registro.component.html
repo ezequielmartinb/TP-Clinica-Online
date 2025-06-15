@@ -9,7 +9,10 @@
     <button class="btn" [ngClass]="botonActivo === 'paciente' ? 'btn-primary' : 'btn-outline-primary'" (click)="setTipo('paciente')"><img [src]="urlImagenPaciente" class="profile-img" />
     </button>  
     <button class="btn" [ngClass]="botonActivo === 'especialista' ? 'btn-primary' : 'btn-outline-primary'" (click)="setTipo('especialista')"><img [src]="urlImagenEspecialista" class="profile-img" />
+    </button>    
+    <button class="btn" *ngIf="this.rol === 'administrador'" [ngClass]="botonActivo === 'administrador' ? 'btn-primary' : 'btn-outline-primary'" (click)="setTipo('administrador')"><img [src]="urlImagenAdministrador" class="profile-img" />
     </button>  
+       
 </div>  
 
 <form *ngIf="tipoUsuario" [formGroup]="formularioRegistro" (ngSubmit)="register()">

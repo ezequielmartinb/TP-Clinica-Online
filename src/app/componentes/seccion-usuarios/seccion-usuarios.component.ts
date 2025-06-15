@@ -9,6 +9,7 @@ import { DirectivaColorRolDirective } from '../../directivas/directiva-color-rol
 import { DniPipe } from '../../pipes/dni.pipe';
 import { FiltroPipe } from '../../pipes/filtro.pipe';
 import { OrdenarPipe } from '../../pipes/ordenar.pipe';
+import { Router } from '@angular/router';
 
 const supabase = createClient(environment.apiUrl, environment.publicAnonKey)
 
@@ -31,6 +32,7 @@ export class SeccionUsuariosComponent implements OnInit
     { clave: 'mail', etiqueta: 'Mail' },
     { clave: 'dni', etiqueta: 'DNI' },
   ];  
+  constructor(private router: Router) {}
 
   async ngOnInit() {
     this.usuarios = await this.obtenerUsuarios();
@@ -92,6 +94,10 @@ export class SeccionUsuariosComponent implements OnInit
     {
       console.error("⚠ Error al actualizar estado de usuario:", err);
     }  
+  }
+  irRegistro()
+  {
+    this.router.navigate(['registro']);
   }  
 
 }

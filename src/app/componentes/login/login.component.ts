@@ -71,7 +71,7 @@ export class LoginComponent {
       const { data: adminData } = await supabase.from('administradores').select('id').eq('id', userId).maybeSingle();
       if (adminData) {
         usuario = adminData;
-        tipoUsuario = 'admin';
+        tipoUsuario = 'administrador';
       }
   
       const { data: pacienteData } = await supabase.from('pacientes').select('id').eq('id', userId).maybeSingle();
@@ -102,6 +102,7 @@ export class LoginComponent {
       // Redirigir según el tipo de usuario
       this.router.navigate(['/home']);  
       this.authService.setUsuario(email);
+      this.authService.setRol(tipoUsuario);      
     } 
     catch (error) 
     {

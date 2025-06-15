@@ -17,10 +17,11 @@ export class RegistroComponent implements OnInit
 { 
    
   formularioRegistro!: FormGroup;
-  tipoUsuario: 'paciente' | 'especialista' | null = null;  
-  botonActivo: 'paciente' | 'especialista' | null = null;
+  tipoUsuario: 'paciente' | 'especialista' | 'administrador' | null = null;  
+  botonActivo: 'paciente' | 'especialista' | 'administrador' | null = null;
   especialidades: Especialidades[] = [];
   nuevaEspecialidad: string = '';
+  rol: string | null = '';
 
   paciente: Paciente = {
     id: '',
@@ -54,6 +55,7 @@ export class RegistroComponent implements OnInit
   isLoading:boolean = false;
   urlImagenPaciente:string="";
   urlImagenEspecialista:string="";
+  urlImagenAdministrador:string="";
   isLoadingImagenes: boolean = true;
 
 
@@ -64,9 +66,13 @@ export class RegistroComponent implements OnInit
 
   async ngOnInit() 
   {
+    this.rol = await localStorage.getItem('rol');
     await this.obtenerEspecialidades();
     await this.cargarImagen("paciente", "paciente");
-    await this.cargarImagen("especialista", "especialista")
+    await this.cargarImagen("especialista", "especialista");
+    await this.cargarImagen("administrador", "administrador");
+    console.log(this.rol);
+    
   }
 
   async obtenerEspecialidades() 
@@ -110,7 +116,7 @@ export class RegistroComponent implements OnInit
     await this.obtenerEspecialidades();
   }  
 
-  setTipo(tipo: 'paciente' | 'especialista') 
+  setTipo(tipo: 'paciente' | 'especialista' | 'administrador') 
   {
     this.tipoUsuario = tipo;
     this.botonActivo = tipo;
@@ -317,13 +323,17 @@ export class RegistroComponent implements OnInit
   
     return data.publicUrl;
   }  
-  async cargarImagen(imagen: string, tipo: 'paciente' | 'especialista') {
+  async cargarImagen(imagen: string, tipo: 'paciente' | 'especialista' | 'administrador') {
     const url = await this.obtenerImagenPerfil(imagen + ".png");
   
     if (tipo === 'paciente') {
       this.urlImagenPaciente = url;
     } else if (tipo === 'especialista') {
       this.urlImagenEspecialista = url;
+    }
+    else
+    {
+      this.urlImagenAdministrador = url;
     }
     this.isLoadingImagenes = false
     console.log(`URL de ${tipo}:`, url);

@@ -109,6 +109,7 @@ export class AppComponent
 
       this.isLoggedIn = false;
       this.router.navigate(['/login']);
+      localStorage.clear();
       this.cd.detectChanges();
 
     } catch (err) {

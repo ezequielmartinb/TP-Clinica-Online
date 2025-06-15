@@ -7,6 +7,7 @@ export class AuthService
 {
 
   private mail: string | null = null;
+  private rol: string | null = null;
 
   setUsuario(mail: string) 
   {
@@ -16,6 +17,11 @@ export class AuthService
   getUsuario(): string | null 
   {
     return this.mail || localStorage.getItem('mail');
+  }
+  setRol(rol: string) 
+  {
+    this.rol = rol;
+    localStorage.setItem('rol', rol);
   }
 
   logout(): void 
