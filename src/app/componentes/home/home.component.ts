@@ -49,12 +49,4 @@ export class HomeComponent
     this.isAdmin = !!adminData;
     this.cd.detectChanges();
   }
-  
-
-  irASeccionUsuarios() {
-    if (this.isAdmin) {
-      this.router.navigate(['/admin/usuarios']);
-    }
-  }
-
 }

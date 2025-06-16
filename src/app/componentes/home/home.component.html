@@ -4,6 +4,7 @@
 <div class="contenedor-botones">
     <button class="btn btn-outline-primary" *ngIf="!usuarioAutenticado" routerLink="/login">Login</button>
     <button class="btn btn-outline-primary" *ngIf="!usuarioAutenticado" routerLink="/registro">Registro</button>
-    <button class="btn btn-outline-primary" *ngIf="isAdmin" (click)="irASeccionUsuarios()">Sección Usuarios</button>
+    <button class="btn btn-outline-primary" *ngIf="usuarioAutenticado && !isAdmin" routerLink="/mis-turnos">Mis Turnos</button>
+    <button class="btn btn-outline-primary" *ngIf="isAdmin" routerLink="/admin/usuarios">Sección Usuarios</button>
 </div>
   
