@@ -18,17 +18,20 @@ export class HomeComponent
   usuarioAutenticado: boolean = false;
   cargandoBotones:boolean = true;
   rol: string | null = "";
+  isLoading: boolean = false;
 
   constructor(private cd: ChangeDetectorRef, private router: Router) {}
 
-  async ngOnInit() {
+  async ngOnInit() 
+  {
+    this.isLoading = true;
     await this.verificarAdmin();
     const { data } = await supabase.auth.getSession();
     this.usuarioAutenticado = !!data.session?.user;
     this.cargandoBotones = false;
     this.rol = localStorage.getItem('rol');
-    console.log(this.rol);
-    
+    this.isLoading = false;
+    console.log(this.rol);    
   }
 
   async verificarAdmin() {

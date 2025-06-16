@@ -28,6 +28,7 @@ export class MiPerfilComponent {
   diasSemana: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
   especialistaId!: string;
   mostrarFormulario = false;
+  isLoading:boolean = false;
 
   constructor(private fb: FormBuilder)
   {
@@ -35,6 +36,7 @@ export class MiPerfilComponent {
   }
   async ngOnInit() 
   {
+    this.isLoading = true;
     this.rol = localStorage.getItem('rol');
     this.mail = localStorage.getItem('mail');
     this.horarioForm = this.fb.group({
@@ -70,6 +72,7 @@ export class MiPerfilComponent {
         this.especialistaId = this.especialista.id;
       }
     }
+    this.isLoading = false;
     console.log("El paciente es: " + this.paciente);    
     console.log("El especialista es: " + this.especialista);    
   }

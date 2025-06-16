@@ -9,4 +9,9 @@
     <button class="btn btn-outline-primary" *ngIf="usuarioAutenticado && !isAdmin" routerLink="/mis-turnos">Mis Turnos</button>
     <button class="btn btn-outline-primary" *ngIf="isAdmin" routerLink="/admin/usuarios">Sección Usuarios</button>
 </div>
+
+<div *ngIf="isLoading" class="overlay">
+    <div class="spinner"></div>
+    <p>Cargando...</p>
+</div>
   

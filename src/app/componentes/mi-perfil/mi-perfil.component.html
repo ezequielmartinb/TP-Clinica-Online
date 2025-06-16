@@ -48,7 +48,7 @@
     </div>    
 </div>
 
-<!-- Mensaje si no hay datos del usuario -->
-<div *ngIf="paciente === null && especialista === null">
-    <p>No se encontraron datos del usuario.</p>
+<div *ngIf="isLoading" class="overlay">
+    <div class="spinner"></div>
+    <p>Cargando...</p>
 </div>
