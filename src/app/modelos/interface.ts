@@ -21,7 +21,6 @@ export interface Paciente extends Usuario
 export interface Especialista extends Usuario 
 {
     especialidad: string;
-    horario_id?: number;
 }
 
 export interface Administrador extends Usuario 

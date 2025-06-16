@@ -17,6 +17,7 @@ export class HomeComponent
   isAdmin: boolean = false;
   usuarioAutenticado: boolean = false;
   cargandoBotones:boolean = true;
+  rol: string | null = "";
 
   constructor(private cd: ChangeDetectorRef, private router: Router) {}
 
@@ -25,6 +26,9 @@ export class HomeComponent
     const { data } = await supabase.auth.getSession();
     this.usuarioAutenticado = !!data.session?.user;
     this.cargandoBotones = false;
+    this.rol = localStorage.getItem('rol');
+    console.log(this.rol);
+    
   }
 
   async verificarAdmin() {

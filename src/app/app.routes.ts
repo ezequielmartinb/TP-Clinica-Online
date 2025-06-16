@@ -21,10 +21,14 @@ export const routes: Routes =
     {
         path:'registro',
         loadComponent: () => import('./componentes/registro/registro.component').then(r=> r.RegistroComponent)
-    },
+    }, 
     {
-        path:'mis-turnos',
-        loadComponent: () => import('./componentes/mis-turnos/mis-turnos.component').then(t=> t.MisTurnosComponent)
+        path:'mi-perfil',
+        loadComponent: () => import('./componentes/mi-perfil/mi-perfil.component').then(m=> m.MiPerfilComponent)
+    },   
+    {
+        path:'solicitar-turnos',
+        loadComponent: () => import('./componentes/solicitar-turnos/solicitar-turnos.component').then(s=> s.SolicitarTurnosComponent)
     },
     {
         path:'admin/usuarios',

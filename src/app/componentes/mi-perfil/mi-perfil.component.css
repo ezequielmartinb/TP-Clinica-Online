@@ -1,0 +1,104 @@
+/* Contenedor principal */
+.perfil-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Imagen de perfil */
+.perfil-imagen {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #007bff;
+    margin-bottom: 15px;
+}
+
+/* Botón de horarios */
+.boton-horarios {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background 0.3s;
+}
+
+.boton-horarios:hover {
+    background: #0056b3;
+}
+.boton-horarios:disabled {
+    background: #ccc; /* Color gris indicando inactividad */
+    cursor: not-allowed; /* Cambia el cursor para indicar que no es interactivo */
+    opacity: 0.6; /* Reduce la opacidad para diferenciarlo visualmente */
+}
+small 
+{
+    color: red;
+    font-size: 0.85rem;
+}
+
+/* Información del usuario */
+.perfil-info p {
+    font-size: 16px;
+    color: #333;
+    margin: 5px 0;
+}
+
+.perfil-info strong {
+    color: #007bff;
+}
+/* Contenedor del formulario */
+.horario-form-container {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Etiquetas */
+.horario-form label {
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+/* Inputs y selects */
+.horario-form input,
+.horario-form select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* Botón de enviar */
+.horario-form button {
+    width: 100%;
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.horario-form button:hover {
+    background: #0056b3;
+}

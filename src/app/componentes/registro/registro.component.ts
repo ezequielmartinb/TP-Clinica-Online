@@ -48,7 +48,6 @@ export class RegistroComponent implements OnInit
     especialidad: '',
     imagen_perfil: '',
     aprobado: true,
-    horario_id: undefined
   };
   administrador: Administrador = {
     id: '',

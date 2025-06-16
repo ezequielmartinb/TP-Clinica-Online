@@ -1,0 +1,54 @@
+<title>Mi perfil</title>
+<h1>Mi Perfil</h1>
+
+<div class="perfil-container" *ngIf="paciente!=null">
+    <img class="perfil-imagen" *ngIf="paciente.imagen_perfil" [src]="paciente.imagen_perfil" alt="Imagen de perfil">
+    <h2>{{ paciente.nombre }} {{ paciente.apellido }}</h2>
+    <p class="perfil-info"><strong>Email:</strong> {{ paciente.mail }}</p>
+    <p class="perfil-info"><strong>Edad:</strong> {{ paciente.edad }}</p>
+    <p class="perfil-info"><strong>DNI:</strong> {{ paciente.dni | dni}}</p>
+    <p class="perfil-info"><strong>Obra Social:</strong> {{ paciente.obra_social?.toUpperCase() }}</p>   
+</div>
+<div class="perfil-container" *ngIf="especialista!=null">
+    <img class="perfil-imagen" *ngIf="especialista.imagen_perfil" [src]="especialista.imagen_perfil" alt="Imagen de perfil">
+    <h2>{{ especialista.nombre }} {{ especialista.apellido }}</h2>
+    <p class="perfil-info"><strong>Email:</strong> {{ especialista.mail }}</p>
+    <p class="perfil-info"><strong>DNI:</strong> {{ especialista.dni | dni }}</p>
+    <p class="perfil-info"><strong>Edad:</strong> {{ especialista.edad }}</p>
+    <p class="perfil-info"><strong>Especialidad:</strong> {{ especialista.especialidad | especialidad | async}} </p>  
+    <button class="boton-horarios" (click)="toggleFormulario()">Mis horarios</button>
+
+    <!-- Formulario de horarios (se muestra si mostrarFormulario es true) -->
+    <div class="horario-form-container" *ngIf="mostrarFormulario">
+        <form class="horario-form" [formGroup]="horarioForm" (ngSubmit)="guardarHorario()">
+            <label for="diaSemana">Día de la semana:</label>
+            <select id="diaSemana" formControlName="diaSemana">
+                <option *ngFor="let dia of diasSemana" [value]="dia">{{ dia }}</option>
+            </select>
+            <div *ngIf="horarioForm.get('diaSemana')?.invalid">
+                <small *ngIf="horarioForm.get('diaSemana')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+            </div>
+    
+            <label for="horaInicio">Hora de inicio:</label>
+            <input type="time" id="horaInicio" formControlName="horaInicio" step="1800">
+            <div *ngIf="horarioForm.get('horaInicio')?.invalid">
+                <small *ngIf="horarioForm.get('horaInicio')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+            </div>    
+            <label for="horaFin">Hora de fin:</label>
+            <input type="time" id="horaFin" formControlName="horaFin" step="1800">
+            <div *ngIf="horarioForm.get('horaFin')?.invalid">
+                <small *ngIf="horarioForm.get('horaFin')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+            </div>
+            <div class="error" *ngIf="horarioForm.errors?.['duracionInvalida']">
+                <p>⚠️ La franja horaria debe ser exactamente de 30 minutos.</p>
+            </div>            
+            <br>    
+            <button type="submit" class="boton-horarios" [disabled]="horarioForm.invalid">Guardar Horario</button>
+        </form>
+    </div>    
+</div>
+
+<!-- Mensaje si no hay datos del usuario -->
+<div *ngIf="paciente === null && especialista === null">
+    <p>No se encontraron datos del usuario.</p>
+</div>
