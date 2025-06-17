@@ -1,6 +1,6 @@
 export interface Usuario
 {
-    id: string;
+    id: number;
     nombre: string;
     apellido: string;
     edad: number;
@@ -20,7 +20,7 @@ export interface Paciente extends Usuario
 
 export interface Especialista extends Usuario 
 {
-    especialidad: string;
+    id_especialidad: number;
 }
 
 export interface Administrador extends Usuario 
@@ -32,3 +32,11 @@ export interface Especialidades
     id: number,
     nombre: string
 }
+export interface HorarioEspecialista {
+    id: string; // UUID
+    especialista_id: string; // UUID del especialista (relación con especialistas)
+    dia_semana: 'Lunes' | 'Martes' | 'Miércoles' | 'Jueves' | 'Viernes' | 'Sábado' | 'Domingo'; // Restricción según la base de datos
+    hora_inicio: string; // Formato "HH:mm:ss"
+    hora_fin: string; // Formato "HH:mm:ss"
+  }
+  

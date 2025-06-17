@@ -9,16 +9,15 @@ const supabase = createClient(environment.apiUrl, environment.publicAnonKey)
 })
 export class EspecialidadPipe implements PipeTransform {
 
-  async transform(value: string)
+  async transform(value: number)
   {
     if (!value) return 'Especialidad desconocida';
-    const idEspecialidad = parseInt(value, 10);    
     
     // Consultar la especialidad en Supabase
     const { data, error } = await supabase
       .from('especialidades')
       .select('nombre')
-      .eq('id', idEspecialidad)
+      .eq('id', value)
       .single();
 
     if (error) {

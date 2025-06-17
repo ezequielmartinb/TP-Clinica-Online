@@ -69,7 +69,7 @@ export class MiPerfilComponent {
       else
       {
         this.especialista = (data as Especialista);
-        this.especialistaId = this.especialista.id;
+        this.especialistaId = String(this.especialista.id);
       }
     }
     this.isLoading = false;

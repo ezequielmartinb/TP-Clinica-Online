@@ -1,1 +1,15 @@
-<p>solicitar-turnos works!</p>
+<select [(ngModel)]="especialidadSeleccionada" (change)="onSelect($event)">
+    <option *ngFor="let especialidad of especialidades" [value]="especialidad.id">
+      {{ especialidad.nombre }}
+    </option>
+</select>
+<select>
+    <option *ngFor="let especialista of especialistas">
+    {{ especialista.apellido }} {{ especialista.nombre }}    
+    </option>
+</select>
+<select *ngIf="horarioEspecialista!.length > 0">
+    <option *ngFor="let horario of horarioEspecialista!">
+      {{ horario.dia_semana }}: {{ horario.hora_inicio }} - {{ horario.hora_fin }}
+    </option>
+</select>

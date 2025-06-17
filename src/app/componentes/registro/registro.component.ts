@@ -24,7 +24,7 @@ export class RegistroComponent implements OnInit
   rol: string | null = '';
 
   paciente: Paciente = {
-    id: '',
+    id: 0,
     nombre: '',
     apellido: '',
     edad: 0,
@@ -38,19 +38,19 @@ export class RegistroComponent implements OnInit
   };
 
   especialista: Especialista = {
-    id: '',
+    id: 0,
     nombre: '',
     apellido: '',
     edad: 0,
     dni: '',
     mail: '',
     contrasena: '',
-    especialidad: '',
+    id_especialidad: 0,
     imagen_perfil: '',
     aprobado: true,
   };
   administrador: Administrador = {
-    id: '',
+    id: 0,
     nombre: '',
     apellido: '',
     edad: 0,
@@ -299,7 +299,7 @@ export class RegistroComponent implements OnInit
   
       // Crear objeto de usuario
       const usuarioData: Usuario = {
-        id: userId,
+        id: Number(userId),
         nombre: this.formularioRegistro.get('nombre')?.value,
         apellido: this.formularioRegistro.get('apellido')?.value,
         edad: this.formularioRegistro.get('edad')?.value,
@@ -330,7 +330,7 @@ export class RegistroComponent implements OnInit
         this.especialista = 
         {
           ...usuarioData,
-          especialidad: this.formularioRegistro.get('especialidad')?.value,
+          id_especialidad: this.formularioRegistro.get('especialidad')?.value,
         };
         this.especialista.aprobado = false;
         await supabase.from('especialistas').insert([this.especialista]);
