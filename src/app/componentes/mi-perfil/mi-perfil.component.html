@@ -41,32 +41,42 @@
                 </tr>
               </tbody>
             </table>
-        </div>              
-        <form class="horario-form" [formGroup]="horarioForm" (ngSubmit)="guardarHorario()">
+        </div>                             
+        <form [formGroup]="horarioForm" (ngSubmit)="guardarHorario()" class="horario-form">
             <label for="diaSemana">Día de la semana:</label>
             <select id="diaSemana" formControlName="diaSemana">
-                <option *ngFor="let dia of diasSemana" [value]="dia">{{ dia }}</option>
+              <option *ngFor="let dia of diasSemana" [value]="dia">{{ dia }}</option>
             </select>
-            <div *ngIf="horarioForm.get('diaSemana')?.invalid">
-                <small *ngIf="horarioForm.get('diaSemana')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+            <div *ngIf="horarioForm.get('diaSemana')?.errors?.['required']">
+              <small>⚠ Este campo es obligatorio.</small>
             </div>
-    
+        
             <label for="horaInicio">Hora de inicio:</label>
             <input type="time" id="horaInicio" formControlName="horaInicio" step="1800">
-            <div *ngIf="horarioForm.get('horaInicio')?.invalid">
-                <small *ngIf="horarioForm.get('horaInicio')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
-            </div>    
+            <div *ngIf="horarioForm.get('horaInicio')?.errors?.['required']">
+              <small>⚠ Este campo es obligatorio.</small>
+            </div>
+        
             <label for="horaFin">Hora de fin:</label>
             <input type="time" id="horaFin" formControlName="horaFin" step="1800">
-            <div *ngIf="horarioForm.get('horaFin')?.invalid">
-                <small *ngIf="horarioForm.get('horaFin')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+            <div *ngIf="horarioForm.get('horaFin')?.errors?.['required']">
+              <small>⚠ Este campo es obligatorio.</small>
             </div>
-            <div class="error" *ngIf="horarioForm.errors?.['duracionInvalida']">
-                <p>⚠️ La franja horaria debe ser exactamente de 30 minutos.</p>
-            </div>            
-            <br>    
-            <button type="submit" class="boton-horarios" [disabled]="horarioForm.invalid">Guardar Horario</button>
-        </form>
+        
+            <div class="error" *ngIf="horarioForm.errors?.['horaInvalida']">
+              <p>⚠️ La hora de inicio debe ser anterior a la hora de fin.</p>
+            </div>
+        
+            <br>
+            <button type="submit" [disabled]="horarioForm.invalid || cargandoHorario">
+                <span *ngIf="!cargandoHorario">Guardar Horario</span>
+                <span *ngIf="cargandoHorario">Guardando...</span>
+            </button>
+            <div *ngIf="cargandoHorario" class="spinner-container">
+                <div class="spinner"></div>
+            </div>
+              
+        </form>        
     </div>    
 </div>
 

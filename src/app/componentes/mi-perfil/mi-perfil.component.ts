@@ -29,6 +29,8 @@ export class MiPerfilComponent {
   mostrarFormulario = false;
   isLoading:boolean = false;
   especialidades_de_especialistas: string[] = [];
+  cargandoHorario:boolean = false;
+
 
   constructor(private fb: FormBuilder)
   {
@@ -111,6 +113,7 @@ export class MiPerfilComponent {
       console.error("Formulario inválido.");
       return;
     }
+    this.cargandoHorario = true;
     const horario = 
     {
       especialista_id: this.especialistaId,
@@ -130,8 +133,30 @@ export class MiPerfilComponent {
     else 
     {
       console.log("Horario guardado correctamente.");
+      await this.cargarHorariosDelEspecialista();
       this.horarioForm.reset();
       this.mostrarFormulario = false; // Oculta el formulario después de guardar
     }
+    this.cargandoHorario = false;
   }  
+  async cargarHorariosDelEspecialista() {
+    const { data: horarios, error } = await supabase
+      .from('horarios_especialistas')
+      .select('*')
+      .eq('especialista_id', this.especialistaId);
+  
+    if (error) {
+      console.error('Error al obtener horarios:', error.message);
+      return;
+    }
+  
+    if (horarios) {
+      this.horarios = horarios.map(h => ({
+        dia: h.dia_semana,
+        horaInicio: h.hora_inicio,
+        horaFin: h.hora_fin
+      }));
+    }
+  }
+  
 }

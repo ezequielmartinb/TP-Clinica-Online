@@ -7,13 +7,12 @@ export function validarFranjaHoraria(): ValidatorFn {
     const horaFin = control.get('horaFin')?.value;
 
     if (!horaInicio || !horaFin) {
-      return { camposRequeridos: true }; // Si faltan valores, el formulario es inválido
+      return { camposRequeridos: true };
     }
 
-    const inicio = moment(horaInicio, "HH:mm");
-    const fin = moment(horaFin, "HH:mm");
-    const duracion = fin.diff(inicio, 'minutes');
+    const inicio = moment(horaInicio, 'HH:mm');
+    const fin = moment(horaFin, 'HH:mm');
 
-    return duracion === 30 ? null : { duracionInvalida: true }; // Validar que siempre sean 30 min
+    return inicio.isBefore(fin) ? null : { horaInvalida: true };
   };
 }
