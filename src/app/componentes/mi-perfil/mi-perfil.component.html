@@ -9,6 +9,13 @@
     <p class="perfil-info"><strong>DNI:</strong> {{ paciente.dni | dni}}</p>
     <p class="perfil-info"><strong>Obra Social:</strong> {{ paciente.obra_social?.toUpperCase() }}</p>   
 </div>
+<div class="perfil-container" *ngIf="administrador!=null">
+  <img class="perfil-imagen" *ngIf="administrador.imagen_perfil" [src]="administrador.imagen_perfil" alt="Imagen de perfil">
+  <h2>{{ administrador.nombre }} {{ administrador.apellido }}</h2>
+  <p class="perfil-info"><strong>Email:</strong> {{ administrador.mail }}</p>
+  <p class="perfil-info"><strong>Edad:</strong> {{ administrador.edad }}</p>
+  <p class="perfil-info"><strong>DNI:</strong> {{ administrador.dni | dni}}</p>
+</div>
 <div class="perfil-container" *ngIf="especialista!=null">
     <img class="perfil-imagen" *ngIf="especialista.imagen_perfil" [src]="especialista.imagen_perfil" alt="Imagen de perfil">
     <h2>{{ especialista.nombre }} {{ especialista.apellido }}</h2>

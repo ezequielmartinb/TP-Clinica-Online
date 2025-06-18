@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Especialidades, Especialista, Paciente } from '../../modelos/interface';
+import { Administrador, Especialidades, Especialista, Paciente } from '../../modelos/interface';
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -20,6 +20,7 @@ const supabase = createClient(environment.apiUrl, environment.publicAnonKey)
 export class MiPerfilComponent {
   paciente: Paciente | null = null;
   especialista: Especialista | null = null;
+  administrador: Administrador | null = null;
   mail: string | null = '';
   rol: string | null = '';
   horarios: { dia: string; horaInicio: string; horaFin: string }[] = [];
@@ -52,48 +53,67 @@ export class MiPerfilComponent {
 
     if (this.mail) {
       const rol = localStorage.getItem('rol');
-      const tabla = rol === 'paciente' ? 'pacientes' : 'especialistas';
-
-      const { data, error } = await supabase
-        .from(tabla)
-        .select('*')
-        .eq('mail', this.mail)
-        .single();
-
-      if (error) 
+      if(rol == 'administrador')
       {
-        console.error('Error obteniendo perfil:', error.message);
-      }
-      if(this.rol === 'paciente')
-      {
-        this.paciente = (data as Paciente);
+        const { data, error } = await supabase
+          .from('administradores')
+          .select('*')
+          .eq('mail', this.mail)
+          .single();
+
+        if (error) 
+        {
+          console.error('Error obteniendo perfil:', error.message);
+        }
+        this.administrador = (data as Administrador);
       }
       else
       {
-        this.especialista = (data as Especialista);
-        this.especialistaId = String(this.especialista.id);       
-        const { data: horarios, error: errorHorarios } = await supabase
-        .from('horarios_especialistas')
-        .select('*')
-        .eq('especialista_id', this.especialistaId);
-        if (horarios) {
-          this.horarios = horarios.map(h => ({
-            dia: h.dia_semana,
-            horaInicio: h.hora_inicio,
-            horaFin: h.hora_fin
-          }));
-        }        
-        const { data: especialidadesDeEspecialistas, error: errorEspecialidadesDeEspecialistas } = await supabase
-        .from('especialidades_de_especialistas')
-        .select('especialidades (nombre)')
-        .eq('id_especialista', this.especialista.id);   
-        if(especialidadesDeEspecialistas)
+        const tabla = rol === 'paciente' ? 'pacientes' : 'especialistas';
+
+        const { data, error } = await supabase
+          .from(tabla)
+          .select('*')
+          .eq('mail', this.mail)
+          .single();
+
+        if (error) 
         {
-          this.especialidades_de_especialistas = (especialidadesDeEspecialistas || [])
-          .map((e: any) => e.especialidades?.nombre)
-          .filter((nombre): nombre is string => typeof nombre === 'string');
-        }        
-      }      
+          console.error('Error obteniendo perfil:', error.message);
+        }
+        if(this.rol === 'paciente')
+        {
+          this.paciente = (data as Paciente);
+        }
+        else
+        {
+          this.especialista = (data as Especialista);
+          this.especialistaId = String(this.especialista.id);       
+          const { data: horarios, error: errorHorarios } = await supabase
+          .from('horarios_especialistas')
+          .select('*')
+          .eq('especialista_id', this.especialistaId);
+          if (horarios) {
+            this.horarios = horarios.map(h => ({
+              dia: h.dia_semana,
+              horaInicio: h.hora_inicio,
+              horaFin: h.hora_fin
+            }));
+          }        
+          const { data: especialidadesDeEspecialistas, error: errorEspecialidadesDeEspecialistas } = await supabase
+          .from('especialidades_de_especialistas')
+          .select('especialidades (nombre)')
+          .eq('id_especialista', this.especialista.id);   
+          if(especialidadesDeEspecialistas)
+          {
+            this.especialidades_de_especialistas = (especialidadesDeEspecialistas || [])
+            .map((e: any) => e.especialidades?.nombre)
+            .filter((nombre): nombre is string => typeof nombre === 'string');
+          }        
+        }  
+      }
+      
+          
     }
     this.isLoading = false;
     // console.log("El paciente es: ", this.paciente);    
