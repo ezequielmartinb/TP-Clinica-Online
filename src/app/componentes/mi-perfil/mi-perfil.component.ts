@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Especialista, Paciente } from '../../modelos/interface';
+import { Especialidades, Especialista, Paciente } from '../../modelos/interface';
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -28,6 +28,7 @@ export class MiPerfilComponent {
   especialistaId!: string;
   mostrarFormulario = false;
   isLoading:boolean = false;
+  especialidades_de_especialistas: string[] = [];
 
   constructor(private fb: FormBuilder)
   {
@@ -68,12 +69,35 @@ export class MiPerfilComponent {
       else
       {
         this.especialista = (data as Especialista);
-        this.especialistaId = String(this.especialista.id);
-      }
+        this.especialistaId = String(this.especialista.id);       
+        const { data: horarios, error: errorHorarios } = await supabase
+        .from('horarios_especialistas')
+        .select('*')
+        .eq('especialista_id', this.especialistaId);
+        if (horarios) {
+          this.horarios = horarios.map(h => ({
+            dia: h.dia_semana,
+            horaInicio: h.hora_inicio,
+            horaFin: h.hora_fin
+          }));
+        }        
+        const { data: especialidadesDeEspecialistas, error: errorEspecialidadesDeEspecialistas } = await supabase
+        .from('especialidades_de_especialistas')
+        .select('especialidades (nombre)')
+        .eq('id_especialista', this.especialista.id);   
+        if(especialidadesDeEspecialistas)
+        {
+          this.especialidades_de_especialistas = (especialidadesDeEspecialistas || [])
+          .map((e: any) => e.especialidades?.nombre)
+          .filter((nombre): nombre is string => typeof nombre === 'string');
+        }        
+      }      
     }
     this.isLoading = false;
-    console.log("El paciente es: " + this.paciente);    
-    console.log("El especialista es: " + this.especialista);    
+    // console.log("El paciente es: ", this.paciente);    
+    // console.log("El especialista es: ", this.especialista);    
+    // console.log("Horarios del especialista: ", this.horarios);    
+    // console.log("Especialidades: ", this.especialidades_de_especialistas);    
   }
   toggleFormulario() 
   {
@@ -87,7 +111,6 @@ export class MiPerfilComponent {
       console.error("Formulario inválido.");
       return;
     }
-
     const horario = 
     {
       especialista_id: this.especialistaId,
@@ -110,7 +133,5 @@ export class MiPerfilComponent {
       this.horarioForm.reset();
       this.mostrarFormulario = false; // Oculta el formulario después de guardar
     }
-  }
-
-  
+  }  
 }

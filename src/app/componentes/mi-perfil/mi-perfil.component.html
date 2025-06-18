@@ -15,11 +15,33 @@
     <p class="perfil-info"><strong>Email:</strong> {{ especialista.mail }}</p>
     <p class="perfil-info"><strong>DNI:</strong> {{ especialista.dni | dni }}</p>
     <p class="perfil-info"><strong>Edad:</strong> {{ especialista.edad }}</p>
-    <!-- <p class="perfil-info"><strong>Especialidad:</strong> {{ especialista.id_especialidad | especialidad | async}} </p>   -->
+    <p class="perfil-info">
+        <strong>Especialidades:</strong> {{ especialidades_de_especialistas.join(', ') }}
+    </p>
+              
     <button class="boton-horarios" (click)="toggleFormulario()">Mis horarios</button>
 
     <!-- Formulario de horarios (se muestra si mostrarFormulario es true) -->
     <div class="horario-form-container" *ngIf="mostrarFormulario">
+        <div class="tabla-horarios" *ngIf="horarios.length > 0">
+            <h3>Horarios actuales</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Día</th>
+                  <th>Hora de inicio</th>
+                  <th>Hora de fin</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let horario of horarios">
+                  <td>{{ horario.dia }}</td>
+                  <td>{{ horario.horaInicio }}</td>
+                  <td>{{ horario.horaFin }}</td>
+                </tr>
+              </tbody>
+            </table>
+        </div>              
         <form class="horario-form" [formGroup]="horarioForm" (ngSubmit)="guardarHorario()">
             <label for="diaSemana">Día de la semana:</label>
             <select id="diaSemana" formControlName="diaSemana">
