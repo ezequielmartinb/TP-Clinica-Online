@@ -96,8 +96,8 @@ export class MiPerfilComponent {
           if (horarios) {
             this.horarios = horarios.map(h => ({
               dia: h.dia_semana,
-              horaInicio: h.hora_inicio,
-              horaFin: h.hora_fin
+              horaInicio: h.hora_inicio.slice(0, 5),
+              horaFin: h.hora_fin.slice(0, 5)
             }));
           }        
           const { data: especialidadesDeEspecialistas, error: errorEspecialidadesDeEspecialistas } = await supabase
@@ -111,9 +111,7 @@ export class MiPerfilComponent {
             .filter((nombre): nombre is string => typeof nombre === 'string');
           }        
         }  
-      }
-      
-          
+      }          
     }
     this.isLoading = false;
     console.log("El paciente es: ", this.paciente);    
@@ -142,7 +140,6 @@ export class MiPerfilComponent {
       hora_inicio: moment.tz(this.horarioForm.value.horaInicio, "HH:mm", "America/Argentina/Buenos_Aires").format("HH:mm"),
       hora_fin: moment.tz(this.horarioForm.value.horaFin, "HH:mm", "America/Argentina/Buenos_Aires").format("HH:mm")
     };
-    console.log(horario);
 
     // Verificar si ya existe un horario para ese día
     const diaSeleccionado = this.horarioForm.value.diaSemana;
