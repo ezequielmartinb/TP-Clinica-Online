@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Administrador, Especialista, Paciente, Usuario } from '../../modelos/interface';
+import { Administrador, EspecialidadDeEspecialista, Especialista, Paciente, Usuario } from '../../modelos/interface';
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { FormsModule } from '@angular/forms';
@@ -23,6 +23,7 @@ const supabase = createClient(environment.apiUrl, environment.publicAnonKey)
 export class SeccionUsuariosComponent implements OnInit
 {
   usuarios: Usuario[] = [];
+  especialidadesDeEspecialistas: EspecialidadDeEspecialista[] = []
   cargando: boolean = true; // Nueva variable para el estado de carga
   filtro: string = '';
   campoSeleccionado: string = 'nombre'; // valor por defecto
@@ -34,9 +35,13 @@ export class SeccionUsuariosComponent implements OnInit
   ];  
   constructor(private router: Router) {}
 
-  async ngOnInit() {
+  async ngOnInit() 
+  {
     this.usuarios = await this.obtenerUsuarios();
+    this.especialidadesDeEspecialistas = await this.obtenerEspecialidadesDeEspecialistas();
     this.cargando = false;    
+    console.log(this.usuarios);
+    
   }
 
   async obtenerUsuarios(): Promise<Usuario[]> 
@@ -45,7 +50,7 @@ export class SeccionUsuariosComponent implements OnInit
     const { data: especialistas, error: errorEspecialistas } = await supabase.from('especialistas').select('*');
     const { data: administradores, error: errorAdministradores } = await supabase.from('administradores').select('*');
   
-    if (errorPacientes || errorEspecialistas || errorAdministradores) {
+    if (errorPacientes || errorEspecialistas || errorAdministradores)  {
       console.error('Error obteniendo datos:', errorPacientes || errorEspecialistas || errorAdministradores);
       return [];
     }
@@ -53,20 +58,30 @@ export class SeccionUsuariosComponent implements OnInit
     return [
       ...pacientes.map(paciente => ({ ...paciente})),
       ...especialistas.map(especialista => ({ ...especialista })),
-      ...administradores.map(admin => ({ ...admin }))
+      ...administradores.map(admin => ({ ...admin })),
     ];
   }
-  obtenerTipoClase(usuario: any): 'paciente' | 'especialista' | 'administrador' | 'Desconocido' 
+  async obtenerEspecialidadesDeEspecialistas(): Promise<EspecialidadDeEspecialista[]> 
   {
+    const { data: especialidades_de_especialistas, error: errorespecialidades_de_especialistas } = await supabase.from('especialidades_de_especialistas').select('*');
+    if ( errorespecialidades_de_especialistas) {
+      console.error('Error obteniendo datos:', errorespecialidades_de_especialistas);
+      return [];
+    }
+    return [      
+      ...especialidades_de_especialistas.map(especialidades_de_especialistas => ({ ...especialidades_de_especialistas }))
+    ];
+  }
+  obtenerTipoClase(usuario: Usuario): 'paciente' | 'especialista' | 'administrador' | 'Desconocido' {
     if ('obra_social' in usuario) return 'paciente';
-    if ('especialidad' in usuario) return 'especialista';
-    if ('es_admin' in usuario || usuario.rol === 'admin') return 'administrador';
+    if (this.esUsuarioEspecialista(usuario.id)) return 'especialista';
+    if ('es_admin' in usuario) return 'administrador';
     return 'Desconocido';
   }
   obtenerTablaPorTipo(usuario: any): string 
   {
     if (usuario.obra_social) return 'pacientes';
-    if (usuario.especialidad) return 'especialistas';
+    if (this.esUsuarioEspecialista(usuario.id)) return 'especialistas';
     return 'administradores';
   }
   
@@ -99,5 +114,8 @@ export class SeccionUsuariosComponent implements OnInit
   {
     this.router.navigate(['registro']);
   }  
-
+  esUsuarioEspecialista(idUsuario: string): boolean {
+    return this.especialidadesDeEspecialistas.some(e => e.id_especialista === idUsuario);
+  }
+  
 }

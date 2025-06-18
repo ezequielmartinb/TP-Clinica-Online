@@ -47,7 +47,7 @@ export class SolicitarTurnosComponent implements OnInit
       this.especialistas = []; // Evitar que sea null
       return;
     }
-  
+    // VER DE MODIFICAR ESTA LINEA
     this.especialistas = data as Especialista[] ?? []; // Si `data` es null, asignar un array vacío
     for (const especialista of this.especialistas) {
       this.horarioEspecialista = await this.cargarHorarios(especialista.id);
@@ -55,7 +55,7 @@ export class SolicitarTurnosComponent implements OnInit
   
   }
   
-  async cargarHorarios(especialistaId: number) {
+  async cargarHorarios(especialistaId: string) {
     const { data, error } = await supabase
       .from('horarios_especialistas')
       .select('dia_semana, hora_inicio, hora_fin')

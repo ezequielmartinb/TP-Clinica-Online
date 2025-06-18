@@ -22,9 +22,10 @@ export class RegistroComponent implements OnInit
   especialidades: Especialidades[] = [];
   nuevaEspecialidad: string = '';
   rol: string | null = '';
+  listaEspecialidades: Especialidades[] = [];
 
   paciente: Paciente = {
-    id: 0,
+    id: '',
     nombre: '',
     apellido: '',
     edad: 0,
@@ -38,19 +39,18 @@ export class RegistroComponent implements OnInit
   };
 
   especialista: Especialista = {
-    id: 0,
+    id: '',
     nombre: '',
     apellido: '',
     edad: 0,
     dni: '',
     mail: '',
     contrasena: '',
-    id_especialidad: 0,
     imagen_perfil: '',
     aprobado: true,
   };
   administrador: Administrador = {
-    id: 0,
+    id: '',
     nombre: '',
     apellido: '',
     edad: 0,
@@ -82,9 +82,9 @@ export class RegistroComponent implements OnInit
     await this.cargarImagen("paciente", "paciente");
     await this.cargarImagen("especialista", "especialista");
     await this.cargarImagen("administrador", "administrador");
+    await this.cargarEspecialidades();
     await supabase.auth.signOut();
-    console.log(this.rol);
-    
+    console.log(this.rol);    
   }
 
   async obtenerEspecialidades() 
@@ -125,7 +125,7 @@ export class RegistroComponent implements OnInit
     }
   
     this.formularioRegistro.get('nueva_especialidad')?.setValue('');
-    await this.obtenerEspecialidades();
+    await this.cargarEspecialidades();
   }  
 
   setTipo(tipo: 'paciente' | 'especialista' | 'administrador') 
@@ -157,7 +157,7 @@ export class RegistroComponent implements OnInit
     else if (this.tipoUsuario === 'especialista') 
     {
       this.formularioRegistro.addControl('imagen_perfil', new FormControl('', Validators.required));
-      this.formularioRegistro.addControl('especialidad', new FormControl('', Validators.required));
+      this.formularioRegistro.addControl('especialidades', new FormControl([], Validators.required));
     }
     else
     {
@@ -299,7 +299,7 @@ export class RegistroComponent implements OnInit
   
       // Crear objeto de usuario
       const usuarioData: Usuario = {
-        id: Number(userId),
+        id: userId,
         nombre: this.formularioRegistro.get('nombre')?.value,
         apellido: this.formularioRegistro.get('apellido')?.value,
         edad: this.formularioRegistro.get('edad')?.value,
@@ -330,11 +330,27 @@ export class RegistroComponent implements OnInit
         this.especialista = 
         {
           ...usuarioData,
-          id_especialidad: this.formularioRegistro.get('especialidad')?.value,
+          
         };
         this.especialista.aprobado = false;
+        console.log(this.especialista);        
         await supabase.from('especialistas').insert([this.especialista]);
-        
+        const especialidadesSeleccionadas: number[] = this.formularioRegistro.get('especialidades')?.value;
+        console.log('Especialidades seleccionadas:', especialidadesSeleccionadas);
+        if (Array.isArray(especialidadesSeleccionadas)) 
+        {
+          const especialidadesRelacion = especialidadesSeleccionadas.map(idEspecialidad => ({
+            id_especialista: userId,
+            id_especialidad: idEspecialidad
+          }));
+          const { error: relError } = await supabase
+            .from('especialidades_de_especialistas')
+            .insert(especialidadesRelacion);
+
+          if (relError) {
+            console.error("Error al insertar especialidades del especialista:", relError.message);
+          }
+        }        
       }
       else
       {
@@ -366,6 +382,12 @@ export class RegistroComponent implements OnInit
   
     return data.publicUrl;
   }  
+  async cargarEspecialidades() {
+    const { data, error } = await supabase.from('especialidades').select('*');
+    if (data) {
+      this.listaEspecialidades = data;
+    }
+  }  
   async cargarImagen(imagen: string, tipo: 'paciente' | 'especialista' | 'administrador') {
     const url = await this.obtenerImagenPerfil(imagen + ".png");
   
@@ -382,8 +404,6 @@ export class RegistroComponent implements OnInit
     // console.log(`URL de ${tipo}:`, url);
   }
   
-  
-
   private getErrorMessage(rawMsg: string): string {
     const messages: Record<string, string> = {
       'Password should be at least 6 characters.': 'La contraseña debe tener al menos 6 caracteres',

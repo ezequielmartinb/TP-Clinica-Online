@@ -4,7 +4,6 @@ import { createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { EspecialidadPipe } from "../../pipes/especialidad.pipe";
 import { DniPipe } from "../../pipes/dni.pipe";
 import * as moment from 'moment-timezone';
 import { validarFranjaHoraria } from '../validadores/tiempo.validator';
@@ -14,7 +13,7 @@ const supabase = createClient(environment.apiUrl, environment.publicAnonKey)
 
 @Component({
   selector: 'app-mi-perfil',
-  imports: [FormsModule, CommonModule, EspecialidadPipe, DniPipe, ReactiveFormsModule],
+  imports: [FormsModule, CommonModule, DniPipe, ReactiveFormsModule],
   templateUrl: './mi-perfil.component.html',
   styleUrl: './mi-perfil.component.css'
 })

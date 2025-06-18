@@ -76,14 +76,16 @@
 
       <ng-container *ngIf="tipoUsuario === 'especialista'">
         <label>Especialidad:</label>
-        <select formControlName="especialidad" class="register-input">
-            <option *ngFor="let especialidad of especialidades" [value]="especialidad.id">
-              {{ especialidad.nombre }}
-            </option>
-        </select>        
-        <div *ngIf="formularioRegistro.get('especialidad')?.invalid">
-            <small *ngIf="formularioRegistro.get('especialidad')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
-        </div>
+        <br>
+        <select multiple formControlName="especialidades" class="register-select">
+          <option *ngFor="let esp of listaEspecialidades" [value]="esp.id">
+            {{ esp.nombre }}
+          </option>
+        </select>
+        <br>
+        <small *ngIf="formularioRegistro.get('especialidades')?.errors?.['required']">
+          ⚠ Debes seleccionar al menos una especialidad.
+        </small>        
         <div class="agregar-especialidad">
             <input type="text" placeholder="Nueva especialidad" formControlName="nueva_especialidad" class="register-input" />
             <button class="btn btn-outline-success" (click)="agregarEspecialidad()">Agregar</button>

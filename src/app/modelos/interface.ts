@@ -1,6 +1,6 @@
 export interface Usuario
 {
-    id: number;
+    id: string;
     nombre: string;
     apellido: string;
     edad: number;
@@ -20,7 +20,7 @@ export interface Paciente extends Usuario
 
 export interface Especialista extends Usuario 
 {
-    id_especialidad: number;
+    
 }
 
 export interface Administrador extends Usuario 
@@ -39,4 +39,10 @@ export interface HorarioEspecialista {
     hora_inicio: string; // Formato "HH:mm:ss"
     hora_fin: string; // Formato "HH:mm:ss"
   }
+  export interface EspecialidadDeEspecialista {
+    id: string; // UUID generado automáticamente
+    id_especialista: string; // UUID de la tabla especialistas
+    id_especialidad: number; // ID entero de la tabla especialidades
+  }
+  
   
