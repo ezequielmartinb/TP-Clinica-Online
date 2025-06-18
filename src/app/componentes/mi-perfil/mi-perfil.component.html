@@ -57,6 +57,9 @@
             <div *ngIf="horarioForm.get('diaSemana')?.errors?.['required']">
               <small>⚠ Este campo es obligatorio.</small>
             </div>
+            <div class="error" *ngIf="horarioForm.errors?.['diaRepetido']">
+              <p>⚠️ Ya existe un horario cargado para ese día.</p>
+            </div>           
         
             <label for="horaInicio">Hora de inicio:</label>
             <input type="time" id="horaInicio" formControlName="horaInicio" step="1800">

@@ -116,10 +116,10 @@ export class MiPerfilComponent {
           
     }
     this.isLoading = false;
-    // console.log("El paciente es: ", this.paciente);    
-    // console.log("El especialista es: ", this.especialista);    
-    // console.log("Horarios del especialista: ", this.horarios);    
-    // console.log("Especialidades: ", this.especialidades_de_especialistas);    
+    console.log("El paciente es: ", this.paciente);    
+    console.log("El especialista es: ", this.especialista);    
+    console.log("Horarios del especialista: ", this.horarios);    
+    console.log("Especialidades: ", this.especialidades_de_especialistas);    
   }
   toggleFormulario() 
   {
@@ -134,6 +134,7 @@ export class MiPerfilComponent {
       return;
     }
     this.cargandoHorario = true;
+    
     const horario = 
     {
       especialista_id: this.especialistaId,
@@ -141,7 +142,20 @@ export class MiPerfilComponent {
       hora_inicio: moment.tz(this.horarioForm.value.horaInicio, "HH:mm", "America/Argentina/Buenos_Aires").format("HH:mm"),
       hora_fin: moment.tz(this.horarioForm.value.horaFin, "HH:mm", "America/Argentina/Buenos_Aires").format("HH:mm")
     };
+    console.log(horario);
 
+    // Verificar si ya existe un horario para ese día
+    const diaSeleccionado = this.horarioForm.value.diaSemana;
+    const yaExiste = this.horarios.some(h => h.dia === diaSeleccionado);
+
+    if (yaExiste) {
+      this.horarioForm.setErrors({ ...this.horarioForm.errors, diaRepetido: true });
+      this.cargandoHorario = false;
+      return;
+    }
+
+
+    
     const { error } = await supabase
       .from('horarios_especialistas')
       .insert([horario]);
