@@ -1,15 +1,48 @@
-<select [(ngModel)]="especialidadSeleccionada" (change)="onSelect($event)">
-    <option *ngFor="let especialidad of especialidades" [value]="especialidad.id">
-      {{ especialidad.nombre }}
-    </option>
+<title>Solicitar tunos</title>
+<h1>Solicitar turno</h1>
+
+<!-- Seleccionar especialidad -->
+<label for="especialidad">Especialidad</label>
+<select [(ngModel)]="especialidadSeleccionada" (change)="onSelect()">
+  <option [ngValue]="null" disabled selected>-- Seleccione una especialidad --</option>
+  <option *ngFor="let especialidad of especialidades"
+          [ngValue]="especialidad">
+    {{ especialidad.nombre }}
+  </option>
 </select>
-<select>
-    <option *ngFor="let especialista of especialistas">
-    {{ especialista.apellido }} {{ especialista.nombre }}    
-    </option>
+
+<!-- Seleccionar especialista -->
+<label for="especialista">Especialista</label>
+<select [(ngModel)]="especialistaSeleccionado" (change)="cargarHorariosDelEspecialista()">
+  <option [ngValue]="null" disabled selected>-- Seleccione un especialista --</option>
+  <option *ngFor="let especialista of especialistas"
+          [ngValue]="especialista">
+    {{ especialista.apellido }}, {{ especialista.nombre }}
+  </option>
 </select>
-<select *ngIf="horarioEspecialista!.length > 0">
-    <option *ngFor="let horario of horarioEspecialista!">
-      {{ horario.dia_semana }}: {{ horario.hora_inicio }} - {{ horario.hora_fin }}
+
+<div *ngIf="esAdministrador">
+  <label for="paciente">Paciente</label>
+  <select [(ngModel)]="pacienteSeleccionado">
+    <option [ngValue]="null" disabled selected>-- Seleccione un paciente --</option>
+    <option *ngFor="let p of pacientes">
+      {{ p.apellido }}, {{ p.nombre }}
     </option>
-</select>
+  </select>
+</div>
+
+
+<div *ngIf="horarioEspecialista.length > 0" class="horarios-container">
+  <label class="horarios-titulo">Horarios disponibles del especialista en {{especialidadSeleccionada.nombre.toLocaleLowerCase()}} {{especialistaSeleccionado?.apellido + ', ' + especialistaSeleccionado?.nombre}}:</label>
+  <ul class="horarios-por-dia">
+    <li *ngFor="let h of horarioEspecialista" class="dia-item">
+      <strong class="dia-label">{{ h.dia_semana }}</strong>
+      <ul class="bloques-dia">
+        <li *ngFor="let bloque of generarBloques(h.hora_inicio, h.hora_fin)" class="bloque-item">
+          <span>{{ bloque }}</span>
+          <button (click)="onSolicitarTurno(h.dia_semana, bloque)">Solicitar</button>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
