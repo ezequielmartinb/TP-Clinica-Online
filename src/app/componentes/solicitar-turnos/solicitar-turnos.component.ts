@@ -186,8 +186,6 @@ export class SolicitarTurnosComponent implements OnInit
     {
       this.pacientes = data as Paciente[];
     }
-    console.log('Pacientes: ', this.pacientes);
-    console.log('Pacientes: ', this.pacientes[0].apellido);
-    
+    console.log('Pacientes: ', this.pacientes);    
   }    
 }
