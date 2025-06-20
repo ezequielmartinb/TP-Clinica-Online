@@ -6,14 +6,15 @@ import { AuthService } from '../../servicios/auth.service';
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { Administrador, Especialidades, Especialista, Paciente, Usuario } from '../../modelos/interface';
+import { RecaptchaFormsModule, RecaptchaModule, RecaptchaV3Module, ReCaptchaV3Service } from 'ng-recaptcha';
 
 const supabase = createClient(environment.apiUrl, environment.publicAnonKey)
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RecaptchaModule, RecaptchaFormsModule, RecaptchaV3Module],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrl: './login.component.css',  
 })
 export class LoginComponent {
   mail:string = "";
@@ -28,7 +29,7 @@ export class LoginComponent {
   administrador:Administrador | undefined;
   isLoadingUsuarios = false;
 
-  constructor(private router: Router, private authService: AuthService) 
+  constructor(private router: Router, private authService: AuthService, private recaptchaV3Service: ReCaptchaV3Service) 
   {
     
   }
@@ -37,83 +38,74 @@ export class LoginComponent {
     this.formularioLogin = new FormGroup(
     {
       mail: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required, Validators.minLength(6)])
+      password: new FormControl('', [Validators.required, Validators.minLength(6)]),
     });
     this.cargarUsuarios();   
   }
-
+  
   async login() {
     this.errorMessage = '';
     this.isLoading = true;
   
-    try {
+    this.recaptchaV3Service.execute('login').subscribe(async (token: string) => {
+      if (!token) {
+        this.errorMessage = '⚠ Error al verificar reCAPTCHA.';
+        this.isLoading = false;
+        return;
+      }
+  
+      // Podés guardarlo si lo querés enviar al backend
+      this.formularioLogin.get('recaptcha')?.setValue(token);
+  
       const email = this.formularioLogin.get('mail')?.value;
       const password = this.formularioLogin.get('password')?.value;
   
-      // Autenticación en Supabase
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   
-      if (error || !data?.user) {
-        this.errorMessage = '⚠ Email o contraseña incorrectos.';
-        return;
-      }
-  
-      const userId = data.user.id;
-      const emailVerificado = data.user.email_confirmed_at;
-  
-      // Buscar usuario en la base de datos
-      let usuario;
-      let tipoUsuario = '';
-  
-      const { data: adminData } = await supabase.from('administradores').select('id').eq('id', userId).maybeSingle();
-      if (adminData) {
-        usuario = adminData;
-        tipoUsuario = 'administrador';
-      }
-  
-      const { data: pacienteData } = await supabase.from('pacientes').select('id').eq('id', userId).maybeSingle();
-      if (pacienteData) {
-        usuario = pacienteData;
-        tipoUsuario = 'paciente';
-      }
-  
-      const { data: especialistaData } = await supabase.from('especialistas').select('id, aprobado').eq('id', userId).maybeSingle();
-      if (especialistaData) 
-      {
-        usuario = especialistaData;
-        tipoUsuario = 'especialista';
-  
-        // Verificar que el especialista esté aprobado
-        if (!especialistaData.aprobado) 
-        {
-          this.errorMessage = '⚠ Tu cuenta debe ser aprobada por un administrador.';
+        if (error || !data?.user) {
+          this.errorMessage = '⚠ Email o contraseña incorrectos.';
           return;
         }
-      }
   
-      if (!usuario) {
-        this.errorMessage = '⚠ Usuario no encontrado.';
-        return;
-      }
+        const userId = data.user.id;
   
-      // Redirigir según el tipo de usuario
-      this.router.navigate(['/home']);  
-      this.authService.setUsuario(email);
-      this.authService.setId(userId);
-      this.authService.setRol(tipoUsuario);      
-    } 
-    catch (error) 
-    {
-      this.errorMessage = '⚠ Error al iniciar sesión.';
-    } 
-    finally 
-    {
-      this.isLoading = false;
-    }
-  }
+        let usuario;
+        let tipoUsuario = '';
+  
+        const { data: adminData } = await supabase.from('administradores').select('id').eq('id', userId).maybeSingle();
+        if (adminData) { usuario = adminData; tipoUsuario = 'administrador'; }
+  
+        const { data: pacienteData } = await supabase.from('pacientes').select('id').eq('id', userId).maybeSingle();
+        if (pacienteData) { usuario = pacienteData; tipoUsuario = 'paciente'; }
+  
+        const { data: especialistaData } = await supabase.from('especialistas').select('id, aprobado').eq('id', userId).maybeSingle();
+        if (especialistaData) {
+          if (!especialistaData.aprobado) {
+            this.errorMessage = '⚠ Tu cuenta debe ser aprobada por un administrador.';
+            return;
+          }
+          usuario = especialistaData;
+          tipoUsuario = 'especialista';
+        }
+  
+        if (!usuario) {
+          this.errorMessage = '⚠ Usuario no encontrado.';
+          return;
+        }
+  
+        this.authService.setUsuario(email);
+        this.authService.setId(userId);
+        this.authService.setRol(tipoUsuario);
+        this.router.navigate(['/home']);
+      } catch (e) {
+        this.errorMessage = '⚠ Error al iniciar sesión.';
+      } finally {
+        this.isLoading = false;
+      }
+    });
+  
+  }  
   async obtenerUsuarios<T>(tabla: string, limite: number): Promise<T[]> {
     const { data, error } = await supabase
       .from(tabla)
