@@ -102,6 +102,7 @@ export class LoginComponent {
       // Redirigir según el tipo de usuario
       this.router.navigate(['/home']);  
       this.authService.setUsuario(email);
+      this.authService.setId(userId);
       this.authService.setRol(tipoUsuario);      
     } 
     catch (error) 

@@ -44,5 +44,15 @@ export interface HorarioEspecialista {
     id_especialista: string; // UUID de la tabla especialistas
     id_especialidad: number; // ID entero de la tabla especialidades
   }
+  export interface Turno {
+    id: string;
+    id_paciente: string;
+    id_especialista: string;
+    especialidad_id: number;
+    fecha: string; // o Date si lo parseás luego
+    hora: string;  // formato 'HH:mm:ss'
+    estado: 'pendiente' | 'aceptado' | 'cancelado' | 'rechazado';
+    resena?: string;
+  }
   
   

@@ -8,11 +8,17 @@ export class AuthService
 
   private mail: string | null = null;
   private rol: string | null = null;
+  private id_usuario: string | null = null;
 
   setUsuario(mail: string) 
   {
     this.mail = mail;
     localStorage.setItem('mail', mail);
+  }
+  setId(id: string) 
+  {
+    this.id_usuario = id;
+    localStorage.setItem('id_usuario', id);
   }
   getUsuario(): string | null 
   {
