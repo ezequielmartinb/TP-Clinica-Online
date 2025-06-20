@@ -7,13 +7,15 @@ import { CommonModule } from '@angular/common';
 import { DniPipe } from "../../pipes/dni.pipe";
 import * as moment from 'moment-timezone';
 import { validarFranjaHoraria } from '../validadores/tiempo.validator';
+import { OrdenarPipe } from '../../pipes/ordenar.pipe';
+import { OrdenarPorDiaPipe } from '../../pipes/ordenar-por-dia.pipe';
 
 
 const supabase = createClient(environment.apiUrl, environment.publicAnonKey)
 
 @Component({
   selector: 'app-mi-perfil',
-  imports: [FormsModule, CommonModule, DniPipe, ReactiveFormsModule],
+  imports: [FormsModule, CommonModule, DniPipe, ReactiveFormsModule, OrdenarPorDiaPipe],
   templateUrl: './mi-perfil.component.html',
   styleUrl: './mi-perfil.component.css'
 })
@@ -31,6 +33,7 @@ export class MiPerfilComponent {
   isLoading:boolean = false;
   especialidades_de_especialistas: string[] = [];
   cargandoHorario:boolean = false;
+  horarioGuardadoConExito:boolean = false;
 
 
   constructor(private fb: FormBuilder)
@@ -122,6 +125,10 @@ export class MiPerfilComponent {
   toggleFormulario() 
   {
     this.mostrarFormulario = !this.mostrarFormulario;
+    if (this.mostrarFormulario) {
+      this.horarioGuardadoConExito = false;
+    }
+  
   }
 
   async guardarHorario() 
@@ -151,8 +158,6 @@ export class MiPerfilComponent {
       return;
     }
 
-
-    
     const { error } = await supabase
       .from('horarios_especialistas')
       .insert([horario]);
@@ -164,6 +169,7 @@ export class MiPerfilComponent {
     else 
     {
       console.log("Horario guardado correctamente.");
+      this.horarioGuardadoConExito = true;
       await this.cargarHorariosDelEspecialista();
       this.horarioForm.reset();
       this.mostrarFormulario = false; // Oculta el formulario después de guardar

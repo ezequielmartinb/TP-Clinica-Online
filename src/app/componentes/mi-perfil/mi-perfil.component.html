@@ -27,6 +27,9 @@
     </p>
               
     <button class="boton-horarios" (click)="toggleFormulario()">Mis horarios</button>
+    <div class="mensaje-exito" *ngIf="horarioGuardadoConExito">
+      ✅ Horario guardado con éxito.
+    </div>
 
     <!-- Formulario de horarios (se muestra si mostrarFormulario es true) -->
     <div class="horario-form-container" *ngIf="mostrarFormulario">
@@ -41,7 +44,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let horario of horarios">
+                <tr *ngFor="let horario of horarios | ordenarPorDia">
                   <td>{{ horario.dia }}</td>
                   <td>{{ horario.horaInicio }}</td>
                   <td>{{ horario.horaFin }}</td>
@@ -82,10 +85,9 @@
                 <span *ngIf="!cargandoHorario">Guardar Horario</span>
                 <span *ngIf="cargandoHorario">Guardando...</span>
             </button>
-            <div *ngIf="cargandoHorario" class="spinner-container">
+            <div *ngIf="cargandoHorario" class="overlay">
                 <div class="spinner"></div>
-            </div>
-              
+            </div>              
         </form>        
     </div>    
 </div>
