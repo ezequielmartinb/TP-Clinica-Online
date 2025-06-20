@@ -51,7 +51,7 @@ export interface HorarioEspecialista {
     especialidad_id: number;
     fecha: string; // o Date si lo parseás luego
     hora: string;  // formato 'HH:mm:ss'
-    estado: 'pendiente' | 'aceptado' | 'cancelado' | 'rechazado';
+    estado: 'pendiente' | 'aceptado' | 'cancelado' | 'rechazado' | 'finalizado';
     resena?: string;
   }
   

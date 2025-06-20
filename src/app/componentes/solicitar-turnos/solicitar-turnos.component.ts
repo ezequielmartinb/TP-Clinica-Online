@@ -196,7 +196,7 @@ export class SolicitarTurnosComponent implements OnInit
     return this.turnosExistentes.some(
       t => t.fecha === this.fechaSeleccionada?.toISOString().split('T')[0]
         && t.hora === horaCompleta
-        && t.estado === 'pendiente'
+        && (t.estado === 'pendiente' || t.estado == 'aceptado')
     );
   }
   

@@ -31,6 +31,10 @@ export const routes: Routes =
         loadComponent: () => import('./componentes/solicitar-turnos/solicitar-turnos.component').then(s=> s.SolicitarTurnosComponent)
     },
     {
+        path:'mis-turnos',
+        loadComponent: () => import('./componentes/mis-turnos/mis-turnos.component').then(t=> t.MisTurnosComponent)
+    },
+    {
         path:'admin/usuarios',
         loadComponent: () => import('./componentes/seccion-usuarios/seccion-usuarios.component').then(r=> r.SeccionUsuariosComponent),
         canActivate: [authGuard]

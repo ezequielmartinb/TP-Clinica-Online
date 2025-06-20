@@ -1,0 +1,124 @@
+<title>Mis turnos</title>
+<h1 *ngIf="rolUsuario === 'paciente'">Turnos del {{rolUsuario}}: {{getNombrePaciente(usuarioId!)}}</h1>
+<h1 *ngIf="rolUsuario === 'especialista'">Turnos del {{rolUsuario}}: {{getNombreEspecialista(usuarioId!)}}</h1>
+
+<!-- Filtros según rol -->
+<div class="mb-3">
+    <input
+    *ngIf="rolUsuario === 'paciente'"
+    type="text"
+    [(ngModel)]="filtroEspecialidadTexto"
+    class="form-control"
+    placeholder="Filtrar por especialidad..."
+  />
+  
+  <input
+    *ngIf="rolUsuario === 'paciente'"
+    type="text"
+    [(ngModel)]="filtroEspecialistaTexto"
+    class="form-control"
+    placeholder="Filtrar por especialista..."
+  />
+  
+  <input
+    *ngIf="rolUsuario === 'especialista'"
+    type="text"
+    [(ngModel)]="filtroPacienteTexto"
+    class="form-control"
+    placeholder="Filtrar por apellido de paciente..."
+  />  
+</div>
+
+<!-- Tabla de turnos -->
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Hora</th>
+      <th *ngIf="rolUsuario === 'paciente'">Especialista</th>
+      <th *ngIf="rolUsuario === 'especialista'">Paciente</th>
+      <th>Especialidad</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let turno of turnos | filtroEspecialidad:(rolUsuario === 'paciente' ? filtroEspecialidadTexto : ''):especialidades 
+    | filtroEspecialista:(rolUsuario === 'paciente' ? filtroEspecialistaTexto : ''):especialistas 
+    | filtroPaciente:(rolUsuario === 'especialista' ? filtroPacienteTexto : ''):pacientes">
+      <td>{{ turno.fecha | date: 'dd/MM/yyyy' }}</td>
+      <td>{{ turno.hora.substring(0, 5) }}</td>
+
+      <td *ngIf="rolUsuario === 'paciente'">{{ getNombreEspecialista(turno.id_especialista) }}</td>
+      <td *ngIf="rolUsuario === 'especialista'">{{ getNombrePaciente(turno.id_paciente) }}</td>
+
+      <td>{{ getNombreEspecialidad(turno.especialidad_id) }}</td>
+
+      <td><strong [ngClass]="turno.estado.toUpperCase()">{{ turno.estado | uppercase }}</strong></td>
+
+      <td>
+        <!-- Paciente: Acciones -->
+        <ng-container *ngIf="rolUsuario === 'paciente'">
+          <button *ngIf="accionesPermitidas(turno).puedeCancelar"
+                  (click)="abrirFormulario(turno.id, 'cancelar')">Cancelar</button>
+
+          <button *ngIf="accionesPermitidas(turno).puedeEncuestar"
+                  (click)="abrirFormulario(turno.id, 'encuesta')">Encuesta</button>
+
+          <button *ngIf="accionesPermitidas(turno).puedeCalificar"
+                  (click)="abrirFormulario(turno.id, 'calificacion')">Calificar</button>
+        </ng-container>
+
+        <!-- Especialista: Acciones -->
+        <ng-container *ngIf="rolUsuario === 'especialista'">
+          <button *ngIf="accionesPermitidas(turno).puedeAceptar"
+                  (click)="aceptarTurno(turno)">Aceptar</button>
+
+          <button *ngIf="accionesPermitidas(turno).puedeCancelar"
+                  (click)="abrirFormulario(turno.id, 'cancelar')">Cancelar</button>
+
+          <button *ngIf="accionesPermitidas(turno).puedeRechazar"
+                  (click)="abrirFormulario(turno.id, 'rechazar')">Rechazar</button>
+
+          <button *ngIf="accionesPermitidas(turno).puedeFinalizar"
+                  (click)="abrirFormulario(turno.id, 'finalizar')">Finalizar</button>
+        </ng-container>
+
+        <!-- Ambos roles -->
+        <button *ngIf="accionesPermitidas(turno).puedeVerResena"
+                (click)="verResena(turno)">
+          {{ resenaActivaId === turno.id ? 'Ocultar Reseña' : 'Ver Reseña' }}
+        </button>
+
+        <!-- Formulario -->
+        <div *ngIf="formularioActivoId === turno.id" class="mt-2">
+          <label><strong>
+            {{
+              accionFormulario === 'cancelar' ? 'Motivo de cancelación:' :
+              accionFormulario === 'rechazar' ? 'Motivo del rechazo:' :
+              accionFormulario === 'finalizar' ? 'Comentario del diagnóstico:' :
+              accionFormulario === 'encuesta' ? 'Opinión sobre la atención:' :
+              'Comentario:'
+            }}
+          </strong></label>
+          <textarea [(ngModel)]="comentario" class="form-control mt-1" rows="3"></textarea>
+          <div class="mt-2">
+            <button class="btn btn-success btn-sm" (click)="enviarFormulario(turno)">Enviar</button>
+            <button class="btn btn-secondary btn-sm" (click)="cerrarFormulario()">Cerrar</button>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Reseña expandida debajo de la tabla -->
+<div *ngIf="resenaActivaId" class="alert alert-info mt-3">
+  <h5>Reseña del turno seleccionado</h5>
+  <p>{{ getResenaActiva() }}</p>
+  <button class="btn btn-outline-secondary btn-sm" (click)="resenaActivaId = null">Cerrar</button>
+</div>
+<div *ngIf="isLoading" class="overlay">
+    <div class="spinner"></div>
+    <p>Cargando...</p>
+</div>
