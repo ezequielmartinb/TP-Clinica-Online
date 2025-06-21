@@ -10,6 +10,9 @@ import { DniPipe } from '../../pipes/dni.pipe';
 import { FiltroPipe } from '../../pipes/filtro.pipe';
 import { OrdenarPipe } from '../../pipes/ordenar.pipe';
 import { Router } from '@angular/router';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+
 
 const supabase = createClient(environment.apiUrl, environment.publicAnonKey)
 
@@ -72,11 +75,10 @@ export class SeccionUsuariosComponent implements OnInit
       ...especialidades_de_especialistas.map(especialidades_de_especialistas => ({ ...especialidades_de_especialistas }))
     ];
   }
-  obtenerTipoClase(usuario: Usuario): 'paciente' | 'especialista' | 'administrador' | 'Desconocido' {
+  obtenerTipoClase(usuario: Usuario): 'paciente' | 'especialista' | 'administrador' {
     if ('obra_social' in usuario) return 'paciente';
     if (this.esUsuarioEspecialista(usuario.id)) return 'especialista';
-    if ('es_admin' in usuario) return 'administrador';
-    return 'Desconocido';
+    return 'administrador';
   }
   obtenerTablaPorTipo(usuario: any): string 
   {
@@ -117,5 +119,24 @@ export class SeccionUsuariosComponent implements OnInit
   esUsuarioEspecialista(idUsuario: string): boolean {
     return this.especialidadesDeEspecialistas.some(e => e.id_especialista === idUsuario);
   }
-  
+  exportarExcel(): void {
+    const usuariosExportar = this.usuarios.map(u => ({
+      Apellido: u.apellido,
+      Nombre: u.nombre,
+      Edad: u.edad,
+      DNI: u.dni,
+      Email: u.mail,
+      Tipo: this.obtenerTipoClase(u),
+      Aprobado: u.aprobado ? 'Sí' : 'No'
+    }));
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(usuariosExportar);
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Usuarios': worksheet },
+      SheetNames: ['Usuarios']
+    };
+
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    FileSaver.saveAs(blob, 'listado_usuarios.xlsx');
+  }  
 }
