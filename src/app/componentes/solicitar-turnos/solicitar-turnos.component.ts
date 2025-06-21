@@ -302,6 +302,18 @@ export class SolicitarTurnosComponent implements OnInit
     this.fechaSeleccionada = null;
     this.proximosDias = [];
   }
+  esBloquePasado(hora: string): boolean {
+    if (!this.fechaSeleccionada) return false;
   
- 
+    const ahora = new Date();
+    const fechaTurno = new Date(this.fechaSeleccionada);
+  
+    // Si no es el día actual, no se bloquea nada
+    if (fechaTurno.toDateString() !== ahora.toDateString()) return false;
+  
+    const [h, m] = hora.split(':').map(Number);
+    fechaTurno.setHours(h, m, 0);
+  
+    return fechaTurno.getTime() < ahora.getTime();
+  } 
 }

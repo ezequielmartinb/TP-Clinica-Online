@@ -40,6 +40,11 @@ export const routes: Routes =
         canActivate: [authGuard]
     },
     {
+        path:'admin/turnos',
+        loadComponent: () => import('./componentes/turnos-admin/turnos-admin.component').then(t=> t.TurnosAdminComponent),
+        canActivate: [authGuard]
+    },
+    {
         path:'**',
         component:ErrorComponent
     }

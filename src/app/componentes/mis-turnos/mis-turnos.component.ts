@@ -32,7 +32,14 @@ export class MisTurnosComponent implements OnInit
   filtroPacienteTexto: string = '';
   resenaActivaId: string | null = null;
   isLoading:boolean = true;
-
+  motivoActivoId: string | null = null;
+  tipoMotivoActivo: string | null = null;
+  textoMotivo: string = '';
+  rolMotivoUsuario: 'paciente' | 'especialista' | null = null;
+  puntuacionSeleccionada: number = 0;
+  comentarioEncuesta: string = '';
+  turnosCalificados = new Set<string>(); // guarda los id_turno ya calificados
+  
   async ngOnInit() 
   {
     const rol = localStorage.getItem('rol'); // debería ser 'paciente' o 'especialista'
@@ -53,6 +60,7 @@ export class MisTurnosComponent implements OnInit
     {
       await this.cargarTurnosEspecialista();
     }
+    await this.cargarCalificaciones();
     await this.cargarEspecialidades();
     await this.cargarEspecialistas();
     this.isLoading = false;
@@ -152,6 +160,7 @@ export class MisTurnosComponent implements OnInit
     this.formularioActivoId = turnoId;
     this.accionFormulario = accion;
     this.comentario = '';
+    this.comentarioEncuesta = '';
     console.log('id turno seleccionado: ', turnoId);    
   }
 
@@ -162,48 +171,89 @@ export class MisTurnosComponent implements OnInit
     this.comentario = '';
   }
 
-  async enviarFormulario(turno: Turno) 
-  {
+  async enviarFormulario(turno: Turno) {
     if (!this.comentario.trim()) return;
-
+  
     let nuevoEstado = turno.estado;
-
-    if (this.accionFormulario === 'cancelar') {
+    const accion = this.accionFormulario;
+  
+    if (accion === 'cancelar') {
       nuevoEstado = 'cancelado';
-    } else if (this.accionFormulario === 'rechazar') {
+    } else if (accion === 'rechazar') {
       nuevoEstado = 'rechazado';
-    } else if (this.accionFormulario === 'finalizar') {
+    } else if (accion === 'finalizar') {
       nuevoEstado = 'finalizado';
     }
-
+  
+    // Actualiza el estado del turno (y la reseña solo si se finaliza)
     const { error } = await supabase
       .from('turnos')
-      .update({ estado: nuevoEstado, resena: this.comentario })
+      .update({
+        estado: nuevoEstado,
+        ...(accion === 'finalizar' && { resena: this.comentario })
+      })
       .eq('id', turno.id);
-
-    if (!error) 
-    {
+  
+    if (!error) {
       turno.estado = nuevoEstado;
-      turno.resena = this.comentario;
+      if (accion === 'finalizar') {
+        turno.resena = this.comentario;
+      }
+  
+      if (accion === 'cancelar' || accion === 'rechazar') {
+        // Guarda el motivo en tabla separada
+        await supabase.from('turnos_cancelados').insert({
+          id_turno: turno.id,
+          motivo: this.comentario,
+          accion: accion,
+          rol_usuario: this.rolUsuario,
+          fecha_registro: new Date().toISOString()
+        });
+      }
     }
-
     this.cerrarFormulario();
-  }
+  }  
 
   verResena(turno: Turno) {
     this.resenaActivaId = this.resenaActivaId === turno.id ? null : turno.id;
   }  
+  async verMotivoCancelacion(turno: Turno) {
+    if (this.motivoActivoId === turno.id) {
+      this.cerrarMotivoCancelacion();
+      return;
+    }
+  
+    const { data, error } = await supabase
+      .from('turnos_cancelados')
+      .select('motivo, accion, rol_usuario')
+      .eq('id_turno', turno.id)
+      .single();
+  
+    if (!error && data) {
+      this.motivoActivoId = turno.id;
+      this.textoMotivo = data.motivo;
+      this.tipoMotivoActivo = data.accion;
+      this.rolMotivoUsuario = data.rol_usuario;
+    }
+  }
+  cerrarMotivoCancelacion() {
+    this.motivoActivoId = null;
+    this.textoMotivo = '';
+    this.tipoMotivoActivo = null;
+  }
+  
+  
   accionesPermitidas(turno: Turno) {
     if (this.rolUsuario === 'paciente') {
       return {
         puedeCancelar: turno.estado === 'pendiente' || turno.estado === 'aceptado',
-        puedeEncuestar: turno.estado === 'finalizado' && turno.resena,
+        puedeEncuestar: turno.estado === 'finalizado' && !!turno.resena,
         puedeCalificar: turno.estado === 'finalizado',
         puedeVerResena: !!turno.resena
       };
     } else {
       return {
-        puedeCancelar: !['aceptado', 'finalizado', 'rechazado'].includes(turno.estado),
+        puedeCancelar: !['aceptado', 'finalizado', 'rechazado', 'cancelado'].includes(turno.estado),
         puedeRechazar: !['aceptado', 'finalizado', 'cancelado'].includes(turno.estado),
         puedeAceptar: !['aceptado', 'cancelado', 'rechazado', 'finalizado'].includes(turno.estado),
         puedeFinalizar: turno.estado === 'aceptado',
@@ -218,6 +268,34 @@ export class MisTurnosComponent implements OnInit
       .eq('id', turno.id);
   
     if (!error) turno.estado = 'aceptado';
+  }  
+  async enviarCalificacion(turno: Turno) {
+    if (!this.usuarioId || !this.puntuacionSeleccionada) return;
+  
+    const { error } = await supabase.from('calificacion').insert({
+      id_turno: turno.id,
+      puntuacion: this.puntuacionSeleccionada,
+      fecha_respuesta: new Date().toISOString()
+    });
+  
+    if (!error) {
+      this.puntuacionSeleccionada = 0;
+      this.cerrarFormulario();
+      console.log('✅ Calificacion registrada');
+    } else {
+      console.error('❌ Error al registrar calificacion:', error.message);
+    }
+  }
+  async cargarCalificaciones() {
+    const { data, error } = await supabase
+      .from('calificacion')
+      .select('id_turno');
+  
+    if (!error && data) {
+      data.forEach(registro => {
+        this.turnosCalificados.add(registro.id_turno);
+      });
+    }
   }
   
   

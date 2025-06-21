@@ -53,9 +53,23 @@
         {{ bloque }}
         <button 
           (click)="onSolicitarTurno(h.dia_semana, bloque)" 
-          [disabled]="bloqueOcupado(bloque)"
-          [ngClass]="{ 'btn-ocupado': bloqueOcupado(bloque) }">
-          {{ bloqueOcupado(bloque) ? 'No disponible' : 'Solicitar' }}
+          [disabled]="bloqueOcupado(bloque) || esBloquePasado(bloque)"
+          [ngClass]="{
+            'btn-ocupado': bloqueOcupado(bloque),
+            'btn-pasado': esBloquePasado(bloque)
+          }"
+          [title]="
+            bloqueOcupado(bloque)
+              ? 'Este horario ya fue reservado'
+              : esBloquePasado(bloque)
+                ? 'Este horario ya pasó'
+                : 'Disponible'
+          ">
+          {{
+            bloqueOcupado(bloque) || esBloquePasado(bloque)
+              ? 'No disponible'
+              : 'Solicitar'
+          }}
         </button>
       </div>
     </ng-container>

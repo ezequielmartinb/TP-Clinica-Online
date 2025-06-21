@@ -97,24 +97,3 @@
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
-.estrellas {
-  direction: rtl;
-  unicode-bidi: bidi-override;
-}
-
-.estrellas input[type="radio"] {
-  display: none;
-}
-
-.estrellas label {
-  font-size: 1.6rem;
-  color: #ccc;
-  cursor: pointer;
-  padding: 0 4px;
-}
-
-.estrellas input[type="radio"]:checked ~ label,
-.estrellas label:hover,
-.estrellas label:hover ~ label {
-  color: gold;
-}
