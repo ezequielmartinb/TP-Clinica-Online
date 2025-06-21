@@ -1,0 +1,1 @@
+import{La as n,Ma as o,_a as a,ya as t}from"./chunk-2FMVFHTF.js";import"./chunk-FOQH46ZT.js";var c=class e{static \u0275fac=function(i){return new(i||e)};static \u0275cmp=t({type:e,selectors:[["app-historia-clinica"]],decls:2,vars:0,template:function(i,p){i&1&&(n(0,"p"),a(1,"historia-clinica works!"),o())},encapsulation:2})};export{c as HistoriaClinicaComponent};
