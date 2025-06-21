@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './componentes/home/home.component';
 import { ErrorComponent } from './componentes/error/error.component';
 import { authGuard } from './guards/auth.guard';
+import { sessionGuard } from './guards/session.guard';
 
 export const routes: Routes = 
 [
@@ -24,15 +25,22 @@ export const routes: Routes =
     }, 
     {
         path:'mi-perfil',
-        loadComponent: () => import('./componentes/mi-perfil/mi-perfil.component').then(m=> m.MiPerfilComponent)
+        loadComponent: () => import('./componentes/mi-perfil/mi-perfil.component').then(m=> m.MiPerfilComponent),
+        canActivate: [sessionGuard]
     },   
     {
         path:'solicitar-turnos',
-        loadComponent: () => import('./componentes/solicitar-turnos/solicitar-turnos.component').then(s=> s.SolicitarTurnosComponent)
+        loadComponent: () => import('./componentes/solicitar-turnos/solicitar-turnos.component').then(s=> s.SolicitarTurnosComponent),
+        canActivate: [sessionGuard]
     },
     {
         path:'mis-turnos',
-        loadComponent: () => import('./componentes/mis-turnos/mis-turnos.component').then(t=> t.MisTurnosComponent)
+        loadComponent: () => import('./componentes/mis-turnos/mis-turnos.component').then(t=> t.MisTurnosComponent),
+        canActivate: [sessionGuard]
+    },
+    {
+        path:'historia-clinica',
+        loadComponent: () => import('./componentes/historia-clinica/historia-clinica.component').then(h=> h.HistoriaClinicaComponent)
     },
     {
         path:'admin/usuarios',
