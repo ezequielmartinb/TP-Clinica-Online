@@ -43,6 +43,8 @@ export class SolicitarTurnosComponent implements OnInit
       await this.cargarPacientes();
     }
     this.generarProximosDias();
+    console.log('especialidades: ', this.especialidades);
+    
   }
     
   async cargarEspecialistas(especialidadId: number): Promise<void> {
@@ -72,7 +74,7 @@ export class SolicitarTurnosComponent implements OnInit
       // Obtener datos de los especialistas por esos IDs
       const { data: especialistasData, error: errorEspecialistas } = await supabase
         .from('especialistas')
-        .select('id, nombre, apellido, edad, dni, mail, contrasena, aprobado')
+        .select('id, nombre, apellido, edad, dni, mail, contrasena, aprobado, imagen_perfil')
         .in('id', especialistasIds);
 
   
@@ -102,29 +104,29 @@ export class SolicitarTurnosComponent implements OnInit
   
   async obtenerEspecialidadesDisponibles(): Promise<void> {
     try {
-      // Obtener los IDs únicos de especialidades que están asociadas a algún especialista
-      const { data, error } = await supabase
+      // Paso 1: Obtener las especialidades relacionadas con al menos un especialista
+      const { data: relaciones, error } = await supabase
         .from('especialidades_de_especialistas')
         .select('id_especialidad')
         .not('id_especialidad', 'is', null);
   
-      if (error || !data) {
-        console.error("Error obteniendo especialidades con especialistas:", error?.message);
+      if (error || !relaciones) {
+        console.error("Error obteniendo relaciones:", error?.message);
         this.especialidades = [];
         return;
       }
   
-      const especialidadesIds = [...new Set(data.map(e => e.id_especialidad))];
+      const especialidadesIds = [...new Set(relaciones.map(r => r.id_especialidad))];
   
       if (especialidadesIds.length === 0) {
         this.especialidades = [];
         return;
       }
   
-      // Obtener nombres de especialidades por los IDs obtenidos
+      // Paso 2: Obtener datos completos de esas especialidades, incluyendo imagen_perfil
       const { data: especialidades, error: errorEspecialidades } = await supabase
         .from('especialidades')
-        .select('id, nombre')
+        .select('id, nombre, imagen_perfil')
         .in('id', especialidadesIds);
   
       if (errorEspecialidades || !especialidades) {
@@ -138,7 +140,7 @@ export class SolicitarTurnosComponent implements OnInit
       console.error("Error inesperado:", error);
       this.especialidades = [];
     }
-  }  
+  }
   async cargarHorariosDelEspecialista(): Promise<void> {
     const especialistaId = this.especialistaSeleccionado?.id;
     if (!especialistaId) return;
@@ -316,4 +318,20 @@ export class SolicitarTurnosComponent implements OnInit
   
     return fechaTurno.getTime() < ahora.getTime();
   } 
+  seleccionarEspecialidad(especialidad: Especialidades): void {
+    this.especialidadSeleccionada = especialidad;
+    this.onSelect(); // Llama a la función que carga especialistas, si aplica
+  }
+  obtenerUrlImagen(especialidad: Especialidades): string {
+    if (!especialidad.imagen_perfil || especialidad.imagen_perfil === 'default') {
+      return 'https://lzvrwsqlfgdedhxagipk.supabase.co/storage/v1/object/public/imagenespecialidades/default.jpg';
+    }
+    return especialidad.imagen_perfil;
+  }  
+  async seleccionarEspecialista(especialista: Especialista) {
+    this.especialistaSeleccionado = especialista;
+    this.fechaSeleccionada = null; // Reiniciás la fecha si ya estaba seleccionada
+    await this.cargarHorariosDelEspecialista(); // Cargás los horarios para ese especialista
+    this.generarProximosDias(); // Calculás las fechas disponibles
+  }
 }

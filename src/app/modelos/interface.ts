@@ -31,6 +31,7 @@ export interface Especialidades
 {
     id: number,
     nombre: string
+    imagen_perfil?: string
 }
 export interface HorarioEspecialista {
     id: string; // UUID

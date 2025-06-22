@@ -1,27 +1,39 @@
 <title>Solicitar turnos</title>
 <h1>Solicitar turno</h1>
-
-<!-- Seleccionar especialidad -->
-<section>
-  <label for="especialidad">Especialidad</label>
-  <select [(ngModel)]="especialidadSeleccionada" (change)="onSelect()">
-    <option [ngValue]="null" disabled selected>-- Seleccione una especialidad --</option>
-    <option *ngFor="let especialidad of especialidades" [ngValue]="especialidad">
-      {{ especialidad.nombre }}
-    </option>
-  </select>
+<!-- Seleccionar especialidad con imagen -->
+<section class="especialidades-grid">
+  <div 
+    *ngFor="let especialidad of especialidades" 
+    class="especialidad-card"
+    (click)="seleccionarEspecialidad(especialidad)"
+    [ngClass]="{ 'seleccionada': especialidadSeleccionada?.id === especialidad.id }"
+  >
+    <img 
+      [src]="obtenerUrlImagen(especialidad)" 
+      alt="{{ especialidad.nombre }}" 
+      class="imagen-especialidad"
+    />
+    <p>{{ especialidad.nombre }}</p>
+  </div>
 </section>
 
-<!-- Seleccionar especialista -->
-<section>
-  <label for="especialista">Especialista</label>
-  <select [(ngModel)]="especialistaSeleccionado" (change)="onCambiarEspecialista()">
-    <option [ngValue]="null" disabled selected>-- Seleccione un especialista --</option>
-    <option *ngFor="let especialista of especialistas" [ngValue]="especialista">
-      {{ especialista.apellido }}, {{ especialista.nombre }}
-    </option>
-  </select>
+<!-- Seleccionar especialista con imagen -->
+<section class="especialistas-grid">
+  <div 
+    *ngFor="let especialista of especialistas" 
+    class="especialista-card"
+    (click)="seleccionarEspecialista(especialista)"
+    [ngClass]="{ 'seleccionado': especialistaSeleccionado?.id === especialista.id }"
+  >
+    <img 
+      [src]="especialista.imagen_perfil" 
+      alt="{{ especialista.nombre }}" 
+      class="imagen-especialista"
+    />
+    <p>{{ especialista.apellido }}, {{ especialista.nombre }}</p>
+  </div>
 </section>
+
 
 <!-- Seleccionar paciente (si es administrador) -->
 <section *ngIf="esAdministrador">
