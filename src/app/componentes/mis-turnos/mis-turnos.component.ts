@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { createClient } from '@supabase/supabase-js';
 import { CommonModule } from '@angular/common';
@@ -7,17 +7,21 @@ import { Especialidades, Especialista, Paciente, Turno } from '../../modelos/int
 import { FiltroEspecialidadPipe } from "../../pipes/filtro-especialidad.pipe";
 import { FiltroEspecialistaPipe } from "../../pipes/filtro-especialista.pipe";
 import { FiltroPacientePipe } from "../../pipes/filtro-paciente.pipe";
+import { MiEncuestaComponent } from "../mi-encuesta/mi-encuesta.component";
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 
 const supabase = createClient(environment.apiUrl, environment.publicAnonKey);
 
 @Component({
   selector: 'app-mis-turnos',
-  imports: [CommonModule, FormsModule, FiltroEspecialidadPipe, FiltroEspecialistaPipe, FiltroPacientePipe],
+  imports: [CommonModule, FormsModule, FiltroEspecialidadPipe, FiltroEspecialistaPipe, FiltroPacientePipe, MatDialogModule],
   templateUrl: './mis-turnos.component.html',
   styleUrl: './mis-turnos.component.css'
 })
 export class MisTurnosComponent implements OnInit
 {
+  @ViewChild('modalAccion') modalAccion!: TemplateRef<any>;
+  @ViewChild('modalCalificacion') modalCalificacion!: TemplateRef<any>;
   rolUsuario:string = '';
   turnos: Turno[] = [];
   especialidades: Especialidades[] = [];
@@ -39,6 +43,14 @@ export class MisTurnosComponent implements OnInit
   puntuacionSeleccionada: number = 0;
   comentarioEncuesta: string = '';
   turnosCalificados = new Set<string>(); // guarda los id_turno ya calificados
+  turnosEncuestados = new Set<string>(); // guarda los id_turno ya encuestados
+  dialogRef: MatDialogRef<any> | null = null;
+  turnoSeleccionado!: Turno;
+  accionSeleccionada!: 'cancelar' | 'rechazar' | 'finalizar';
+
+
+
+  constructor(private dialog: MatDialog) {}
   
   async ngOnInit() 
   {
@@ -60,9 +72,10 @@ export class MisTurnosComponent implements OnInit
     {
       await this.cargarTurnosEspecialista();
     }
-    await this.cargarCalificaciones();
     await this.cargarEspecialidades();
     await this.cargarEspecialistas();
+    await this.cargarEncuestas();
+    await this.cargarCalificaciones();
     this.isLoading = false;
   }
   
@@ -131,6 +144,15 @@ export class MisTurnosComponent implements OnInit
     const { data, error } = await supabase.from('pacientes').select('*');    
     this.pacientes = error ? [] : data ?? [];
   }
+  async cargarEncuestas() {
+    const { data, error } = await supabase
+      .from('encuestas')
+      .select('id_turno');
+  
+    if (!error && data) {
+      data.forEach(item => this.turnosEncuestados.add(item.id_turno));
+    }
+  }
   
   getNombrePaciente(id: string): string 
   {   
@@ -153,7 +175,21 @@ export class MisTurnosComponent implements OnInit
     const turno = this.turnos.find(t => t.id === this.resenaActivaId);
     return turno?.resena ?? null;
   }
+  getTurnoById(id: string | null): Turno | null {
+    return this.turnos.find(t => t.id === id) ?? null;
+  }
+  abrirEncuestaModal(turno: Turno) {
+    const dialogRef = this.dialog.open(MiEncuestaComponent, {
+      width: '500px',
+      data: { turno }  // esto llega como @Inject(MAT_DIALOG_DATA) en el componente
+    });
   
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.id_turno) {
+        this.turnosEncuestados.add(result.id_turno);
+      }
+    });  
+  }  
 
   abrirFormulario(turnoId: string, accion: 'cancelar' | 'encuesta' | 'calificacion' | 'rechazar' | 'finalizar')
   {
@@ -175,7 +211,9 @@ export class MisTurnosComponent implements OnInit
     if (!this.comentario.trim()) return;
   
     let nuevoEstado = turno.estado;
-    const accion = this.accionFormulario;
+    const accion = this.accionSeleccionada;
+    console.log(accion);
+    
   
     if (accion === 'cancelar') {
       nuevoEstado = 'cancelado';
@@ -202,18 +240,44 @@ export class MisTurnosComponent implements OnInit
   
       if (accion === 'cancelar' || accion === 'rechazar') {
         // Guarda el motivo en tabla separada
+        const fechaArgentina = new Date().toLocaleString('sv-SE', { timeZone: 'America/Argentina/Buenos_Aires' });
         await supabase.from('turnos_cancelados').insert({
           id_turno: turno.id,
           motivo: this.comentario,
           accion: accion,
           rol_usuario: this.rolUsuario,
-          fecha_registro: new Date().toISOString()
+          fecha_registro: fechaArgentina
         });
       }
     }
     this.cerrarFormulario();
   }  
+  abrirModalAccion(turno: Turno, accion: 'cancelar' | 'rechazar' | 'finalizar') {
+    this.turnoSeleccionado = turno;
+    this.accionSeleccionada = accion;
+    this.comentario = '';
+  
+    this.dialogRef = this.dialog.open(this.modalAccion, {
+      width: '400px',
+      data: { accion }
+    });
+  }
+  abrirCalificacionModal(turno: Turno) {
+    this.turnoSeleccionado = turno;
+    this.puntuacionSeleccionada = 0;
+    this.dialogRef = this.dialog.open(this.modalCalificacion, {
+      width: '400px'
+    });
+  }
+  
+  
+  async confirmarAccion() 
+  {
+    await this.enviarFormulario(this.turnoSeleccionado);
+    this.dialogRef?.close();
+  }
 
+  
   verResena(turno: Turno) {
     this.resenaActivaId = this.resenaActivaId === turno.id ? null : turno.id;
   }  
@@ -240,8 +304,7 @@ export class MisTurnosComponent implements OnInit
     this.motivoActivoId = null;
     this.textoMotivo = '';
     this.tipoMotivoActivo = null;
-  }
-  
+  }  
   
   accionesPermitidas(turno: Turno) {
     if (this.rolUsuario === 'paciente') {
@@ -269,20 +332,26 @@ export class MisTurnosComponent implements OnInit
   
     if (!error) turno.estado = 'aceptado';
   }  
-  async enviarCalificacion(turno: Turno) {
+  async enviarCalificacion(turno: Turno) 
+  {
     if (!this.usuarioId || !this.puntuacionSeleccionada) return;
-  
+    const fechaArgentina = new Date().toLocaleString('sv-SE', { timeZone: 'America/Argentina/Buenos_Aires' });
+    
     const { error } = await supabase.from('calificacion').insert({
       id_turno: turno.id,
       puntuacion: this.puntuacionSeleccionada,
-      fecha_respuesta: new Date().toISOString()
+      fecha_respuesta: fechaArgentina
     });
   
-    if (!error) {
+    if (!error) 
+    {
       this.puntuacionSeleccionada = 0;
-      this.cerrarFormulario();
+      this.turnosCalificados.add(turno.id);
       console.log('✅ Calificacion registrada');
-    } else {
+      this.dialogRef?.close();
+    } 
+    else 
+    {
       console.error('❌ Error al registrar calificacion:', error.message);
     }
   }
@@ -296,7 +365,5 @@ export class MisTurnosComponent implements OnInit
         this.turnosCalificados.add(registro.id_turno);
       });
     }
-  }
-  
-  
+  }    
 }

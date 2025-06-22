@@ -1,0 +1,60 @@
+<div class="encuesta-container">
+    <h5 class="fw-bold text-primary mb-4">Encuesta de satisfacción</h5>
+  
+    <!-- ✅ Mensaje de éxito -->
+    <div *ngIf="encuestaEnviada; else formulario" class="alert alert-success text-center p-4">
+      <p class="mb-3">✅ Encuesta completada con éxito</p>
+      <button class="btn btn-primary btn-sm" (click)="cerrar()">Aceptar</button>
+    </div>
+  
+    <!-- 📝 Formulario -->
+    <ng-template #formulario>
+      <!-- Atención del especialista -->
+      <div class="mb-3">
+        <label class="form-label d-block">¿Cómo evaluás la atención del especialista?</label>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="atencionExcelente" name="atencion" value="excelente" [(ngModel)]="respuesta.atencion" />
+          <label class="form-check-label" for="atencionExcelente">Excelente</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="atencionBuena" name="atencion" value="buena" [(ngModel)]="respuesta.atencion" />
+          <label class="form-check-label" for="atencionBuena">Buena</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="atencionRegular" name="atencion" value="regular" [(ngModel)]="respuesta.atencion" />
+          <label class="form-check-label" for="atencionRegular">Regular</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="atencionMala" name="atencion" value="mala" [(ngModel)]="respuesta.atencion" />
+          <label class="form-check-label" for="atencionMala">Mala</label>
+        </div>
+      </div>
+  
+      <!-- Instalaciones -->
+      <div class="mb-3">
+        <label class="form-label d-block">¿Cómo evaluás las instalaciones?</label>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="instalacionesExcelente" name="instalaciones" value="excelente" [(ngModel)]="respuesta.instalaciones" />
+          <label class="form-check-label" for="instalacionesExcelente">Excelente</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="instalacionesBuena" name="instalaciones" value="buena" [(ngModel)]="respuesta.instalaciones" />
+          <label class="form-check-label" for="instalacionesBuena">Buena</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="instalacionesRegular" name="instalaciones" value="regular" [(ngModel)]="respuesta.instalaciones" />
+          <label class="form-check-label" for="instalacionesRegular">Regular</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="instalacionesMala" name="instalaciones" value="mala" [(ngModel)]="respuesta.instalaciones" />
+          <label class="form-check-label" for="instalacionesMala">Mala</label>
+        </div>
+      </div> 
+  
+      <!-- Botones -->
+      <div class="d-flex gap-2 mt-3">
+        <button class="btn btn-success btn-sm" (click)="enviarEncuesta()">Enviar</button>
+        <button class="btn btn-secondary btn-sm" (click)="cerrar()">Cancelar</button>
+      </div>
+    </ng-template>
+  </div>

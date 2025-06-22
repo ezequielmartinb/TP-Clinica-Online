@@ -54,5 +54,8 @@ export interface HorarioEspecialista {
     estado: 'pendiente' | 'aceptado' | 'cancelado' | 'rechazado' | 'finalizado';
     resena?: string;
   }
-  
-  
+  export interface Encuesta {
+    atencion: 'excelente' | 'buena' | 'regular' | 'mala' | '';
+    instalaciones: 'excelente' | 'buena' | 'regular' | 'mala' | '';
+    fecha_respuesta?: string; // ISO string opcional, si querés manejarla desde el frontend
+  } 

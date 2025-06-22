@@ -2,31 +2,11 @@
 <h1 *ngIf="rolUsuario === 'paciente'">Turnos del {{rolUsuario}}: {{getNombrePaciente(usuarioId!)}}</h1>
 <h1 *ngIf="rolUsuario === 'especialista'">Turnos del {{rolUsuario}}: {{getNombreEspecialista(usuarioId!)}}</h1>
 
-<!-- Filtros según rol -->
+<!-- Filtros -->
 <div class="mb-3">
-    <input
-    *ngIf="rolUsuario === 'paciente'"
-    type="text"
-    [(ngModel)]="filtroEspecialidadTexto"
-    class="form-control"
-    placeholder="Filtrar por especialidad..."
-  />
-  
-  <input
-    *ngIf="rolUsuario === 'paciente'"
-    type="text"
-    [(ngModel)]="filtroEspecialistaTexto"
-    class="form-control"
-    placeholder="Filtrar por especialista..."
-  />
-  
-  <input
-    *ngIf="rolUsuario === 'especialista'"
-    type="text"
-    [(ngModel)]="filtroPacienteTexto"
-    class="form-control"
-    placeholder="Filtrar por apellido de paciente..."
-  />  
+  <input *ngIf="rolUsuario === 'paciente'" type="text" [(ngModel)]="filtroEspecialidadTexto" class="form-control mb-1" placeholder="Filtrar por especialidad..." />
+  <input *ngIf="rolUsuario === 'paciente'" type="text" [(ngModel)]="filtroEspecialistaTexto" class="form-control mb-1" placeholder="Filtrar por especialista..." />
+  <input *ngIf="rolUsuario === 'especialista'" type="text" [(ngModel)]="filtroPacienteTexto" class="form-control" placeholder="Filtrar por apellido de paciente..." />
 </div>
 
 <!-- Tabla de turnos -->
@@ -43,73 +23,51 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let turno of turnos | filtroEspecialidad:(rolUsuario === 'paciente' ? filtroEspecialidadTexto : ''):especialidades 
-    | filtroEspecialista:(rolUsuario === 'paciente' ? filtroEspecialistaTexto : ''):especialistas 
-    | filtroPaciente:(rolUsuario === 'especialista' ? filtroPacienteTexto : ''):pacientes">
-      <td>{{ turno.fecha | date: 'dd/MM/yyyy' }}</td>
+    <tr *ngFor="let turno of turnos 
+      | filtroEspecialidad:(rolUsuario === 'paciente' ? filtroEspecialidadTexto : ''):especialidades 
+      | filtroEspecialista:(rolUsuario === 'paciente' ? filtroEspecialistaTexto : ''):especialistas 
+      | filtroPaciente:(rolUsuario === 'especialista' ? filtroPacienteTexto : ''):pacientes">
+      
+      <td>{{ turno.fecha | date:'dd/MM/yyyy' }}</td>
       <td>{{ turno.hora.substring(0, 5) }}</td>
 
       <td *ngIf="rolUsuario === 'paciente'">{{ getNombreEspecialista(turno.id_especialista) }}</td>
       <td *ngIf="rolUsuario === 'especialista'">{{ getNombrePaciente(turno.id_paciente) }}</td>
 
       <td>{{ getNombreEspecialidad(turno.especialidad_id) }}</td>
-
       <td><strong [ngClass]="turno.estado.toUpperCase()">{{ turno.estado | uppercase }}</strong></td>
 
       <td>
-        <!-- Paciente: Acciones -->
+        <!-- Acciones paciente -->
         <ng-container *ngIf="rolUsuario === 'paciente'">
-          <button *ngIf="accionesPermitidas(turno).puedeCancelar"
-                  (click)="abrirFormulario(turno.id, 'cancelar')">Cancelar</button>
-      
-          <button *ngIf="accionesPermitidas(turno).puedeEncuestar"
-                  (click)="abrirFormulario(turno.id, 'encuesta')">Encuesta</button>
-      
-          <button *ngIf="accionesPermitidas(turno).puedeCalificar && !turnosCalificados.has(turno.id)"
-                  (click)="abrirFormulario(turno.id, 'calificacion')">Calificar</button>
+          <button *ngIf="accionesPermitidas(turno).puedeCancelar" (click)="abrirModalAccion(turno, 'cancelar')">Cancelar</button>
+          <button *ngIf="accionesPermitidas(turno).puedeEncuestar && !turnosEncuestados.has(turno.id)" (click)="abrirEncuestaModal(turno)">Encuesta</button>
+          <button *ngIf="accionesPermitidas(turno).puedeCalificar && !turnosCalificados.has(turno.id)" (click)="abrirCalificacionModal(turno)">Calificar</button>
         </ng-container>
-      
-        <!-- Especialista: Acciones -->
+
+        <!-- Acciones especialista -->
         <ng-container *ngIf="rolUsuario === 'especialista'">
-          <button *ngIf="accionesPermitidas(turno).puedeAceptar"
-                  (click)="aceptarTurno(turno)">Aceptar</button>
-      
-          <button *ngIf="accionesPermitidas(turno).puedeCancelar"
-                  (click)="abrirFormulario(turno.id, 'cancelar')">Cancelar</button>
-      
-          <button *ngIf="accionesPermitidas(turno).puedeRechazar"
-                  (click)="abrirFormulario(turno.id, 'rechazar')">Rechazar</button>
-      
-          <button *ngIf="accionesPermitidas(turno).puedeFinalizar"
-                  (click)="abrirFormulario(turno.id, 'finalizar')">Finalizar</button>
+          <button *ngIf="accionesPermitidas(turno).puedeAceptar" (click)="aceptarTurno(turno)">Aceptar</button>
+          <button *ngIf="accionesPermitidas(turno).puedeCancelar" (click)="abrirModalAccion(turno, 'cancelar')">Cancelar</button>
+          <button *ngIf="accionesPermitidas(turno).puedeRechazar" (click)="abrirModalAccion(turno, 'rechazar')">Rechazar</button>
+          <button *ngIf="accionesPermitidas(turno).puedeFinalizar" (click)="abrirModalAccion(turno, 'finalizar')">Finalizar</button>
         </ng-container>
-      
-        <!-- Ambos roles -->
-        <button *ngIf="accionesPermitidas(turno).puedeVerResena"
-                (click)="verResena(turno)">
+
+        <!-- Ver reseña y motivo -->
+        <button *ngIf="accionesPermitidas(turno).puedeVerResena" (click)="verResena(turno)">
           {{ resenaActivaId === turno.id ? 'Ocultar Reseña' : 'Ver Reseña' }}
         </button>
-      
-        <button *ngIf="turno.estado === 'cancelado' || turno.estado === 'rechazado'"
-                (click)="verMotivoCancelacion(turno)">
+
+        <button *ngIf="turno.estado === 'cancelado' || turno.estado === 'rechazado'" (click)="verMotivoCancelacion(turno)">
           {{ motivoActivoId === turno.id ? 'Ocultar Motivo' : 'Ver Motivo' }}
         </button>
-      
-        <!-- Formulario dinámico -->
-        <div *ngIf="formularioActivoId === turno.id" class="mt-2">
-          
-          <!-- Calificación -->
-        <div *ngIf="accionFormulario === 'calificacion'" class="p-3 rounded bg-light border mb-2">
+
+        <!-- Calificación -->
+        <div *ngIf="formularioActivoId === turno.id && accionFormulario === 'calificacion'" class="p-3 rounded bg-light border mt-2">
           <label class="form-label fw-bold">Calificá la atención:</label>
           <div class="mb-2 estrellas">
             <ng-container *ngFor="let star of [5,4,3,2,1]">
-              <input
-                type="radio"
-                [id]="'estrella' + turno.id + star"
-                name="puntuacion_{{ turno.id }}"
-                [value]="star"
-                [(ngModel)]="puntuacionSeleccionada"
-              />
+              <input type="radio" [id]="'estrella' + turno.id + star" name="puntuacion_{{ turno.id }}" [value]="star" [(ngModel)]="puntuacionSeleccionada" />
               <label [attr.for]="'estrella' + turno.id + star">★</label>
             </ng-container>
           </div>
@@ -118,48 +76,90 @@
             <button class="btn btn-secondary btn-sm" (click)="cerrarFormulario()">Cancelar</button>
           </div>
         </div>
-
-      
-          <!-- Otros formularios -->
-          <div *ngIf="accionFormulario !== 'encuesta' && accionFormulario !== 'calificacion'">
-            <label><strong>
-              {{
-                accionFormulario === 'cancelar' ? 'Motivo de cancelación:' :
-                accionFormulario === 'rechazar' ? 'Motivo del rechazo:' :
-                accionFormulario === 'finalizar' ? 'Comentario del diagnóstico:' :
-                accionFormulario === 'calificacion' ? 'Comentario de calificación:' :
-                'Comentario:'
-              }}
-            </strong></label>
-            <textarea [(ngModel)]="comentario" class="form-control mt-1" rows="3"></textarea>
-      
-            <div class="mt-2">
-              <button class="btn btn-success btn-sm" (click)="enviarFormulario(turno)">Enviar</button>
-              <button class="btn btn-secondary btn-sm" (click)="cerrarFormulario()">Cerrar</button>
-            </div>
-          </div>
-        </div>
       </td>
     </tr>
-</table>      
+  </tbody>
+</table>
 
-<!-- Reseña expandida debajo de la tabla -->
+<!-- Reseña -->
 <div *ngIf="resenaActivaId" class="alert alert-info mt-3">
   <h5>Reseña del turno seleccionado</h5>
   <p>{{ getResenaActiva() }}</p>
   <button class="btn btn-outline-secondary btn-sm" (click)="resenaActivaId = null">Cerrar</button>
 </div>
-<!-- Motivo de cancelación o rechazo -->
+
+<!-- Motivo cancelación/rechazo -->
 <div *ngIf="motivoActivoId" class="alert alert-warning mt-3">
-  <h5>
-    Motivo de {{ tipoMotivoActivo === 'cancelar' ? 'cancelación' : 'rechazo' }}
-    del turno por {{ rolMotivoUsuario }}
-  </h5>
+  <h5>Motivo de {{ tipoMotivoActivo === 'cancelar' ? 'cancelación' : 'rechazo' }} del turno por {{ rolMotivoUsuario }}</h5>
   <p>{{ textoMotivo }}</p>
   <button class="btn btn-outline-secondary btn-sm" (click)="cerrarMotivoCancelacion()">Cerrar</button>
 </div>
 
+<!-- Spinner -->
 <div *ngIf="isLoading" class="overlay">
-    <div class="spinner"></div>
-    <p>Cargando...</p>
+  <div class="spinner"></div>
+  <p>Cargando...</p>
 </div>
+
+<!-- 🧾 Modal con motivo o comentario -->
+<ng-template #modalAccion let-data>
+  <div class="modal-content p-3 rounded shadow-sm">
+    <div class="modal-header border-0 pb-2">
+      <h5 class="modal-title">
+        {{
+          accionSeleccionada === 'rechazar' ? 'Turno rechazado' :
+          accionSeleccionada === 'cancelar' ? 'Turno cancelado' :
+          accionSeleccionada === 'finalizar' ? 'Reseña' :
+          'Detalle'
+        }}
+      </h5>      
+      <button type="button" class="btn-close" aria-label="Cerrar" (click)="dialogRef?.close()"></button>
+    </div>
+    <div class="modal-body pt-0">
+      <label class="form-label">
+        {{ accionSeleccionada === 'cancelar' ? 'Motivo de cancelación:' : accionSeleccionada === 'rechazar' ? 'Motivo del rechazo:' : 'Comentario del diagnóstico:' }}
+      </label>
+      <textarea class="form-control" [(ngModel)]="comentario" rows="3" placeholder="Escribí un motivo..."></textarea>
+    </div>
+
+    <div class="modal-footer border-0 pt-3">
+      <button type="button" class="btn btn-primary btn-sm" (click)="confirmarAccion()">Enviar</button>
+      <button type="button" class="btn btn-secondary btn-sm" (click)="dialogRef?.close()">Cerrar</button>
+    </div>
+  </div>
+</ng-template>
+
+
+<!-- 🧾 Modal con calificacion -->
+<ng-template #modalCalificacion let-data>
+  <div class="modal-content p-4 rounded shadow-sm">
+    <!-- Encabezado -->
+    <div class="modal-header border-0 pb-2">
+      <h5 class="modal-title">Calificá la atención</h5>
+      <button type="button" class="btn-close" aria-label="Cerrar" (click)="dialogRef?.close()"></button>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="modal-body pt-0">
+      <div class="mb-3">
+        <label class="form-label fw-bold">Puntaje:</label>
+        <div class="estrellas">
+          <ng-container *ngFor="let star of [5,4,3,2,1]">
+            <input type="radio"
+                   [id]="'estrella_modal_' + star"
+                   name="puntuacion_modal"
+                   [value]="star"
+                   [(ngModel)]="puntuacionSeleccionada" />
+            <label [attr.for]="'estrella_modal_' + star">★</label>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pie -->
+    <div class="modal-footer border-0 pt-2 d-flex justify-content-end gap-2">
+      <button type="button" class="btn btn-primary btn-sm" (click)="enviarCalificacion(turnoSeleccionado)">Enviar</button>
+      <button type="button" class="btn btn-secondary btn-sm" (click)="dialogRef?.close()">Cancelar</button>
+    </div>
+  </div>
+</ng-template>

@@ -97,9 +97,27 @@
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
+/* Contenedor general del modal */
+.modal-content {
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.1);
+}
+
+/* Encabezado */
+.modal-header .modal-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #0d6efd;
+}
+
+/* Estrellas de calificación */
 .estrellas {
-  direction: rtl;
-  unicode-bidi: bidi-override;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  gap: 0.25rem;
+  position: relative;
 }
 
 .estrellas input[type="radio"] {
@@ -107,14 +125,22 @@
 }
 
 .estrellas label {
-  font-size: 1.6rem;
+  font-size: 2rem;
   color: #ccc;
   cursor: pointer;
-  padding: 0 4px;
+  transition: color 0.2s ease;
 }
 
+/* Estrella seleccionada */
 .estrellas input[type="radio"]:checked ~ label,
 .estrellas label:hover,
 .estrellas label:hover ~ label {
-  color: gold;
+  color: #ffc107;
+}
+/* Contenedor principal del modal */
+.modal-content {
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  font-family: 'Segoe UI', sans-serif;
 }

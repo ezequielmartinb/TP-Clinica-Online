@@ -39,6 +39,11 @@ export const routes: Routes =
         canActivate: [sessionGuard]
     },
     {
+        path:'encuesta',
+        loadComponent: () => import('./componentes/mi-encuesta/mi-encuesta.component').then(m=> m.MiEncuestaComponent),
+        canActivate: [sessionGuard]
+    },
+    {
         path:'historia-clinica',
         loadComponent: () => import('./componentes/historia-clinica/historia-clinica.component').then(h=> h.HistoriaClinicaComponent)
     },
