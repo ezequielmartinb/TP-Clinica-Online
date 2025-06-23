@@ -1,1 +1,79 @@
-<p>historia-clinica works!</p>
+
+<form [formGroup]="historiaClinicaForm" (ngSubmit)="onSubmit()" class="p-4 bg-light rounded shadow-sm">
+    <!-- 📏 Datos fijos -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label for="altura" class="form-label fw-semibold">Altura (cm)</label>
+        <input type="number" id="altura" class="form-control" formControlName="altura" />
+        <div *ngIf="historiaClinicaForm.get('altura')?.invalid">
+            <small *ngIf="historiaClinicaForm.get('altura')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+            <small *ngIf="historiaClinicaForm.get('altura')?.errors?.['min']">⚠ Valor minimo 1.</small>
+            <small *ngIf="historiaClinicaForm.get('altura')?.errors?.['max']">⚠ Valor maximo 2.5.</small>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label for="peso" class="form-label fw-semibold">Peso (kg)</label>
+        <input type="number" id="peso" class="form-control" formControlName="peso" />
+        <div *ngIf="historiaClinicaForm.get('peso')?.invalid">
+            <small *ngIf="historiaClinicaForm.get('peso')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+            <small *ngIf="historiaClinicaForm.get('peso')?.errors?.['min']">⚠ Valor minimo 30.</small>
+            <small *ngIf="historiaClinicaForm.get('peso')?.errors?.['max']">⚠ Valor maximo 250.</small>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label for="temperatura" class="form-label fw-semibold">Temperatura (°C)</label>
+        <input type="number" step="0.1" id="temperatura" class="form-control" formControlName="temperatura" />
+        <div *ngIf="historiaClinicaForm.get('temperatura')?.invalid">
+            <small *ngIf="historiaClinicaForm.get('temperatura')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+            <small *ngIf="historiaClinicaForm.get('temperatura')?.errors?.['min']">⚠ Valor minimo 34.</small>
+            <small *ngIf="historiaClinicaForm.get('temperatura')?.errors?.['max']">⚠ Valor maximo 43.</small>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label for="presion" class="form-label fw-semibold">Presión</label>
+        <input type="text" id="presion" class="form-control" formControlName="presion" />
+        <div *ngIf="historiaClinicaForm.get('presion')?.invalid">
+            <small *ngIf="historiaClinicaForm.get('presion')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+            <small *ngIf="historiaClinicaForm.get('presion')?.errors?.['min']">⚠ Valor minimo 34.</small>
+            <small *ngIf="historiaClinicaForm.get('presion')?.errors?.['max']">⚠ Valor maximo 43.</small>
+        </div>
+      </div>
+    </div>
+  
+    <!-- 🧪 Datos dinámicos -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Datos adicionales (máximo 3)</label>
+      <div formArrayName="datosExtra">
+        <div *ngFor="let dato of datosExtra.controls; let i = index" [formGroupName]="i"
+             class="border rounded p-3 mb-2 bg-white shadow-sm">
+          <div class="row align-items-end g-2">
+            <div class="col-md-5">
+              <input type="text" class="form-control" formControlName="clave" placeholder="Clave (ej: caries)" />
+              <div *ngIf="dato.get('clave')?.invalid && dato.get('clave')?.touched">
+                <small *ngIf="dato.get('clave')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+              </div>            
+            </div>
+            <div class="col-md-5">
+              <input type="text" class="form-control" formControlName="valor" placeholder="Valor (ej: 4)" />
+              <div *ngIf="dato.get('clave')?.invalid && dato.get('clave')?.touched">
+                <small *ngIf="dato.get('clave')?.errors?.['required']">⚠ Este campo es obligatorio.</small>
+              </div>   
+            </div>
+            <div class="col-md-2 text-end">
+              <button type="button" class="btn btn-outline-danger w-100" (click)="eliminarDatoExtra(i)">🗑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <button type="button" class="btn btn-outline-primary mt-2" (click)="agregarDatoExtra()"
+              [disabled]="datosExtra.length >= 3">
+        ➕ Agregar dato dinámico
+      </button>
+    </div>
+  
+    <!-- ✅ Botón de envío -->
+    <div class="text-start mt-4">
+      <button type="submit" class="btn btn-success px-4">💾 Guardar historia clínica</button>
+    </div>
+  </form>

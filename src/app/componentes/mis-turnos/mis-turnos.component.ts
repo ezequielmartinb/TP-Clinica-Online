@@ -9,12 +9,13 @@ import { FiltroEspecialistaPipe } from "../../pipes/filtro-especialista.pipe";
 import { FiltroPacientePipe } from "../../pipes/filtro-paciente.pipe";
 import { MiEncuestaComponent } from "../mi-encuesta/mi-encuesta.component";
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { HistoriaClinicaComponent } from "../historia-clinica/historia-clinica.component";
 
 const supabase = createClient(environment.apiUrl, environment.publicAnonKey);
 
 @Component({
   selector: 'app-mis-turnos',
-  imports: [CommonModule, FormsModule, FiltroEspecialidadPipe, FiltroEspecialistaPipe, FiltroPacientePipe, MatDialogModule],
+  imports: [CommonModule, FormsModule, FiltroEspecialidadPipe, FiltroEspecialistaPipe, FiltroPacientePipe, MatDialogModule, HistoriaClinicaComponent],
   templateUrl: './mis-turnos.component.html',
   styleUrl: './mis-turnos.component.css'
 })
@@ -22,6 +23,8 @@ export class MisTurnosComponent implements OnInit
 {
   @ViewChild('modalAccion') modalAccion!: TemplateRef<any>;
   @ViewChild('modalCalificacion') modalCalificacion!: TemplateRef<any>;
+  @ViewChild('modalHistoria') modalHistoria!: TemplateRef<any>;
+  
   rolUsuario:string = '';
   turnos: Turno[] = [];
   especialidades: Especialidades[] = [];
@@ -47,7 +50,10 @@ export class MisTurnosComponent implements OnInit
   dialogRef: MatDialogRef<any> | null = null;
   turnoSeleccionado!: Turno;
   accionSeleccionada!: 'cancelar' | 'rechazar' | 'finalizar';
-
+  mostrarModalHistoria: boolean = false;
+  historiaClinicaPorTurno = new Set<string>();
+  historiaSeleccionada: any = null;
+  historiaActivaId: string | null = null;
 
 
   constructor(private dialog: MatDialog) {}
@@ -72,6 +78,7 @@ export class MisTurnosComponent implements OnInit
     {
       await this.cargarTurnosEspecialista();
     }
+    await this.cargarHistoriasClinicasAsociadas();
     await this.cargarEspecialidades();
     await this.cargarEspecialistas();
     await this.cargarEncuestas();
@@ -153,6 +160,18 @@ export class MisTurnosComponent implements OnInit
       data.forEach(item => this.turnosEncuestados.add(item.id_turno));
     }
   }
+  async cargarHistoriasClinicasAsociadas() {
+    const { data: historias, error } = await supabase
+      .from('historia_clinica')
+      .select('id_turno');
+  
+    if (error) {
+      console.error('Error al obtener historias clínicas:', error);
+      return;
+    }
+  
+    this.historiaClinicaPorTurno = new Set(historias.map(h => h.id_turno));
+  }  
   
   getNombrePaciente(id: string): string 
   {   
@@ -219,8 +238,12 @@ export class MisTurnosComponent implements OnInit
       nuevoEstado = 'cancelado';
     } else if (accion === 'rechazar') {
       nuevoEstado = 'rechazado';
-    } else if (accion === 'finalizar') {
+    } 
+    else if (accion === 'finalizar') {
       nuevoEstado = 'finalizado';
+      this.turnoSeleccionado = turno;
+      this.mostrarModalHistoria = true;
+      this.dialogRef?.close();
     }
   
     // Actualiza el estado del turno (y la reseña solo si se finaliza)
@@ -269,6 +292,78 @@ export class MisTurnosComponent implements OnInit
       width: '400px'
     });
   }
+  async finalizarTurnoConHistoriaClinica(turno: Turno) {
+    const { error } = await supabase
+      .from('turnos')
+      .update({ estado: 'finalizado' })
+      .eq('id', turno.id);
+  
+    if (!error) {
+      turno.estado = 'finalizado';
+      console.log('Turno finalizado con éxito junto con historia clínica');
+  
+      this.historiaClinicaPorTurno.add(turno.id);
+  
+      // 🔄 Refrescar visualmente la fila del turno
+      const idx = this.turnos.findIndex(t => t.id === turno.id);
+      if (idx !== -1) {
+        this.turnos[idx] = { ...this.turnos[idx] };
+      }
+    } else {
+      console.error('Error al finalizar el turno:', error.message);
+    }
+  
+    this.mostrarModalHistoria = false;
+    this.dialogRef?.close();
+    this.cerrarFormulario();
+  }
+  async verHistoriaClinica(turno: Turno) {
+    if (this.historiaActivaId === turno.id) {
+      this.cerrarHistoria();
+      return;
+    }
+  
+    const { data, error } = await supabase
+      .from('historia_clinica')
+      .select('*')
+      .eq('id_turno', turno.id)
+      .maybeSingle();
+  
+    if (error) {
+      console.error('Error al obtener historia clínica:', error.message);
+      return;
+    }
+  
+    this.historiaSeleccionada = data;
+    this.historiaActivaId = turno.id;
+  }
+  
+  cerrarHistoria() {
+    this.historiaActivaId = null;
+    this.historiaSeleccionada = null;
+  }
+  
+  
+
+  async abrirModalHistoria(turno: Turno) {
+    const { data, error } = await supabase
+    .from('historia_clinica')
+    .select('id')
+    .eq('id_turno', turno.id)
+    .maybeSingle();
+
+    if (data) 
+    {
+      alert('Ya se ha cargado una historia clínica para este turno.');
+      return;
+    }
+
+    this.turnoSeleccionado = turno;
+    this.comentario = '';
+    this.dialogRef = this.dialog.open(this.modalHistoria, {
+      width: '400px'
+    });
+  }
   
   
   async confirmarAccion() 
@@ -276,7 +371,6 @@ export class MisTurnosComponent implements OnInit
     await this.enviarFormulario(this.turnoSeleccionado);
     this.dialogRef?.close();
   }
-
   
   verResena(turno: Turno) {
     this.resenaActivaId = this.resenaActivaId === turno.id ? null : turno.id;

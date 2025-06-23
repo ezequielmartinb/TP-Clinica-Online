@@ -1,0 +1,67 @@
+/* 📦 Contenedor general del formulario dentro del modal */
+form {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 700px;
+    margin: 0 auto;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 🧱 Campos */
+  input.form-control,
+  textarea.form-control {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    font-size: 0.95rem;
+  }
+  
+  /* 🖋 Enfocado */
+  input.form-control:focus,
+  textarea.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
+  }
+  
+  /* 🧷 Etiquetas */
+  label.form-label {
+    font-weight: 600;
+    color: #212529;
+  }
+  
+  /* ➕ Botón de agregar */
+  button.btn-outline-primary {
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  
+  /* 🧼 Bloque de dato dinámico */
+  .border.bg-white {
+    border: 1px solid #dee2e6 !important;
+    background-color: #ffffff;
+  }
+  
+  /* 🧽 Botones */
+  button.btn {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  button.btn:hover {
+    transform: scale(1.03);
+  }
+  
+  button[type="submit"] {
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    letter-spacing: 0.5px;
+  }
+  
+  /* 🖼 Ajustes generales para mejorar visual en el modal */
+  :host {
+    display: block;
+    width: 100%;
+  }
+  small 
+{
+    color: red;
+    font-size: 0.85rem;
+}

@@ -60,3 +60,20 @@ export interface HorarioEspecialista {
     instalaciones: 'excelente' | 'buena' | 'regular' | 'mala' | '';
     fecha_respuesta?: string; // ISO string opcional, si querés manejarla desde el frontend
   } 
+  export interface DatoExtra {
+    clave: string;
+    valor: string | number;
+  }
+  
+  export interface HistoriaClinica {
+    id?: number;               // opcional si lo genera la DB
+    paciente_id: number;       // o email/campo identificador del paciente
+    especialista_id: number;   // quien cargó la historia
+    fecha: string;             // en formato ISO (ej: '2025-06-23T17:00:00Z')
+    altura: number;            // en metros
+    peso: number;              // en kg
+    temperatura: number;       // en °C
+    presion: string;           // formato '120/80'
+    datos_extra: DatoExtra[];  // hasta 3 pares clave-valor
+  }
+  

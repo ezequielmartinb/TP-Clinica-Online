@@ -51,6 +51,13 @@
           <button *ngIf="accionesPermitidas(turno).puedeCancelar" (click)="abrirModalAccion(turno, 'cancelar')">Cancelar</button>
           <button *ngIf="accionesPermitidas(turno).puedeRechazar" (click)="abrirModalAccion(turno, 'rechazar')">Rechazar</button>
           <button *ngIf="accionesPermitidas(turno).puedeFinalizar" (click)="abrirModalAccion(turno, 'finalizar')">Finalizar</button>
+          <button *ngIf="turno.estado === 'finalizado' && !historiaClinicaPorTurno.has(turno.id)" (click)="abrirModalHistoria(turno)">Cargar historia clínica</button>
+           <!-- Ver historia clinica -->
+        <button 
+        *ngIf="historiaClinicaPorTurno.has(turno.id)" 
+        (click)="verHistoriaClinica(turno)">
+        {{ historiaActivaId === turno.id ? 'Ocultar Historia' : 'Ver Historia Clínica' }}
+      </button>
         </ng-container>
 
         <!-- Ver reseña y motivo -->
@@ -61,6 +68,8 @@
         <button *ngIf="turno.estado === 'cancelado' || turno.estado === 'rechazado'" (click)="verMotivoCancelacion(turno)">
           {{ motivoActivoId === turno.id ? 'Ocultar Motivo' : 'Ver Motivo' }}
         </button>
+
+       
 
         <!-- Calificación -->
         <div *ngIf="formularioActivoId === turno.id && accionFormulario === 'calificacion'" class="p-3 rounded bg-light border mt-2">
@@ -87,6 +96,27 @@
   <p>{{ getResenaActiva() }}</p>
   <button class="btn btn-outline-secondary btn-sm" (click)="resenaActivaId = null">Cerrar</button>
 </div>
+
+<!-- Historia Clinica -->
+<div *ngIf="historiaActivaId && historiaSeleccionada" class="alert alert-secondary mt-3">
+  <h5>Historia clínica cargada</h5>
+  <p><strong>Altura:</strong> {{ historiaSeleccionada.altura }} m</p>
+  <p><strong>Peso:</strong> {{ historiaSeleccionada.peso }} kg</p>
+  <p><strong>Temperatura:</strong> {{ historiaSeleccionada.temperatura }} °C</p>
+  <p><strong>Presión:</strong> {{ historiaSeleccionada.presion }}</p>
+
+  <div *ngIf="historiaSeleccionada.datos_extra?.length">
+    <h6 class="mt-3">Datos adicionales:</h6>
+    <ul class="mb-0">
+      <li *ngFor="let dato of historiaSeleccionada.datos_extra">
+        {{ dato.clave }}: {{ dato.valor }}
+      </li>
+    </ul>
+  </div>
+
+  <button class="btn btn-outline-secondary btn-sm mt-2" (click)="cerrarHistoria()">Cerrar</button>
+</div>
+
 
 <!-- Motivo cancelación/rechazo -->
 <div *ngIf="motivoActivoId" class="alert alert-warning mt-3">
@@ -160,6 +190,23 @@
     <div class="modal-footer border-0 pt-2 d-flex justify-content-end gap-2">
       <button type="button" class="btn btn-primary btn-sm" (click)="enviarCalificacion(turnoSeleccionado)">Enviar</button>
       <button type="button" class="btn btn-secondary btn-sm" (click)="dialogRef?.close()">Cancelar</button>
+    </div>
+  </div>
+</ng-template>
+<!-- 🧾 Modal historia clínica -->
+<ng-template #modalHistoria let-data>
+  <div class="modal-content p-4 rounded shadow-sm">
+    <div class="modal-header border-0 pb-2">
+      <h5 class="modal-title">Historia clínica</h5>
+      <button type="button" class="btn-close" aria-label="Cerrar" (click)="dialogRef?.close()"></button>
+    </div>
+
+    <div class="modal-body pt-0">
+      <app-historia-clinica
+        [turno]="turnoSeleccionado"
+        [comentario]="comentario"
+        (onHistoriaGuardada)="finalizarTurnoConHistoriaClinica($event)">
+      </app-historia-clinica>
     </div>
   </div>
 </ng-template>
