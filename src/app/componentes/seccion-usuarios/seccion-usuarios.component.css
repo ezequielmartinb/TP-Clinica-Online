@@ -111,6 +111,18 @@
     align-items: center;
     position: relative
   }
+  .btn-ver-historia {
+    transition: all 0.2s ease-in-out;
+  }
   
+  .btn-ver-historia.activa {
+    background-color: #198754;
+    color: white;
+    border-color: #198754;
+  }
+  
+  .btn-ver-historia:hover {
+    transform: scale(1.05);
+  }
   
   

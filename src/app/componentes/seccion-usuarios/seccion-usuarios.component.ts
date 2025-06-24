@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Administrador, EspecialidadDeEspecialista, Especialista, Paciente, Usuario } from '../../modelos/interface';
+import { Administrador, EspecialidadDeEspecialista, Especialista, HistoriaClinica, Paciente, Usuario } from '../../modelos/interface';
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { FormsModule } from '@angular/forms';
@@ -36,6 +36,9 @@ export class SeccionUsuariosComponent implements OnInit
     { clave: 'mail', etiqueta: 'Mail' },
     { clave: 'dni', etiqueta: 'DNI' },
   ];  
+  historiasPorPaciente: HistoriaClinica[] = [];
+  mostrarHistorias: boolean = false;
+  pacienteActivoId: string | null = null;
   constructor(private router: Router) {}
 
   async ngOnInit() 
@@ -139,4 +142,53 @@ export class SeccionUsuariosComponent implements OnInit
     const blob: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
     FileSaver.saveAs(blob, 'listado_usuarios.xlsx');
   }  
+  async verHistoriaClinicaPorPaciente(pacienteId: string) {
+    // Si ya está activo → cerrar
+    if (this.pacienteActivoId === pacienteId) {
+      this.pacienteActivoId = null
+      this.mostrarHistorias = false
+      this.historiasPorPaciente = []
+      return
+    }
+  
+    // Nuevo paciente seleccionado → cargar historias
+    this.pacienteActivoId = pacienteId
+    this.mostrarHistorias = true
+  
+    try {
+      const { data: turnos, error: errorTurnos } = await supabase
+        .from('turnos')
+        .select('id')
+        .eq('id_paciente', pacienteId)
+  
+      if (errorTurnos || !turnos?.length) {
+        console.warn('No se encontraron turnos para el paciente:', pacienteId)
+        this.historiasPorPaciente = []
+        return
+      }
+  
+      const idsTurno = turnos.map(t => t.id)
+  
+      const { data: historias, error: errorHistorias } = await supabase
+        .from('historia_clinica')
+        .select('*')
+        .in('id_turno', idsTurno)
+  
+      if (errorHistorias) {
+        console.error('Error al obtener historias clínicas:', errorHistorias)
+        return
+      }
+  
+      this.historiasPorPaciente = historias || []
+    } catch (error) {
+      console.error('Error al obtener historia clínica del paciente:', error)
+      this.historiasPorPaciente = []
+    }
+  }
+  cerrarHistoria() {
+    this.pacienteActivoId = null
+    this.mostrarHistorias = false
+    this.historiasPorPaciente = []
+  }
+  
 }

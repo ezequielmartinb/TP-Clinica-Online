@@ -26,6 +26,7 @@
             <th>Email</th>
             <th>Aprobado</th>
             <th>Foto de perfil</th>
+            <th>Historia Clínica</th>
           </tr>
         </thead>
         <tbody>
@@ -34,7 +35,7 @@
             <td>{{ usuario.nombre }}</td>
             <td>{{ usuario.edad }}</td>
             <td>{{ usuario.dni | dni}}</td>
-            <td>{{ usuario.mail }}</td>
+            <td>{{ usuario.mail }}</td>            
             <td>
                 <button [ngClass]="usuario.aprobado ? 'btn-habilitado' : 'btn-deshabilitado'" (click)="habilitarUsuario(usuario)">
                   {{ usuario.aprobado ? 'Habilitado' : 'No habilitado' }} 
@@ -44,14 +45,51 @@
               <img *ngIf="usuario.imagen_perfil" [src]="usuario.imagen_perfil" 
                     alt="Foto de {{ usuario.nombre }}" 
                     appDirectivaZoomFotos class="img-perfil">
+            </td>
+            <td>
+              <button class="btn btn-outline-primary btn-sm"
+                      *ngIf="obtenerTipoClase(usuario) === 'paciente'" 
+                      (click)="verHistoriaClinicaPorPaciente(usuario.id)">
+                      {{ pacienteActivoId === usuario.id ? 'Ocultar Historia' : 'Ver Historia Clínica' }}
+              </button>
             </td>      
           </tr>
         </tbody>
     </table>
+    
+    
     <div class="text-end mt-3">
       <button class="btn btn-success" (click)="exportarExcel()">
         Descargar listado
       </button>
+    </div>    
+  </div>
+  <!-- Mostrar historias clínicas si hay -->
+<div *ngIf="mostrarHistorias && historiasPorPaciente.length > 0" class="mt-4">
+  <h5>Historia Clínica</h5>
+  <div *ngFor="let historia of historiasPorPaciente" class="card mb-3">
+    <div class="card-body">
+      <p><strong>Fecha:</strong> {{ historia.fecha | date: 'dd/MM/yyyy HH:mm' }}</p>
+      <p><strong>Altura:</strong> {{ historia.altura }} m</p>
+      <p><strong>Peso:</strong> {{ historia.peso }} kg</p>
+      <p><strong>Temperatura:</strong> {{ historia.temperatura }} °C</p>
+      <p><strong>Presión arterial:</strong> {{ historia.presion }}</p>
+
+      <div *ngIf="historia.datos_extra?.length">
+        <p><strong>Datos adicionales:</strong></p>
+        <ul>
+          <li *ngFor="let dato of historia.datos_extra">
+            {{ dato.clave }}: {{ dato.valor }}
+          </li>
+        </ul>
+      </div>
     </div>
-    
+  </div>
 </div>
+
+<!-- Mensaje si el paciente no tiene historia -->
+<div *ngIf="mostrarHistorias && historiasPorPaciente.length === 0" class="alert alert-warning mt-4">
+  Este paciente aún no tiene historia clínica registrada.
+</div>
+
+  
