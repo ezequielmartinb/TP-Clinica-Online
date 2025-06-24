@@ -364,6 +364,7 @@ export class RegistroComponent implements OnInit
   
       this.message = 'Registro exitoso. ¡Bienvenido!';
       this.messageType = 'success';
+      this.formularioRegistro.reset();
     } catch (err) {
       this.errorMessage = 'Ocurrió un error inesperado al registrar.';
     } finally {
