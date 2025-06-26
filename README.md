@@ -3,7 +3,7 @@
 Aplicación web desarrollada con Angular y Firebase para la gestión integral de una clínica médica. Permite a pacientes, especialistas y administradores interactuar con el sistema de forma segura y eficiente.
 
 ## 🌐 Demo en producción
-[Acceder a la app](https://tp-clinica-online-8e6c9.web.app/home)
+![Acceder a la app](https://tp-clinica-online-8e6c9.web.app/home)
 
 ## 🔑 Roles y funcionalidades
 
@@ -12,7 +12,7 @@ Aplicación web desarrollada con Angular y Firebase para la gestión integral de
 - Solicitud y cancelación de turnos.
 - Visualización de historia clínica.
 
-[Registro de pacientes] (https://lzvrwsqlfgdedhxagipk.supabase.co/storage/v1/object/public/fotospagina//registro-paciente.png)
+![Registro de pacientes](https://lzvrwsqlfgdedhxagipk.supabase.co/storage/v1/object/public/fotospagina//registro-paciente.png)
 
 ### 🧑‍⚕️ Especialista
 - Registro con validación y aprobación por parte del administrador.
