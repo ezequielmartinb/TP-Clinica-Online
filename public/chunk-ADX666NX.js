@@ -1,0 +1,1 @@
+import{Ja as o}from"./chunk-5DH5MI44.js";var a=class t{transform(e){let r=e.toString().replace(/\D/g,""),n=r.length===8,i=n?r:r.padStart(7,"0");return n?i.replace(/(\d{2})(\d{3})(\d{3})/,"$1.$2.$3"):i.replace(/(\d{1})(\d{3})(\d{3})/,"$1.$2.$3")}static \u0275fac=function(r){return new(r||t)};static \u0275pipe=o({name:"dni",type:t,pure:!0})};export{a};
