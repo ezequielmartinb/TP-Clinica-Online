@@ -1,24 +1,80 @@
-h1 
-{
+/* General */
+body {
     font-family: 'Poppins', sans-serif;
-    font-weight: 600;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+  }
+  
+  h1, h2 {
     color: #0d6efd;
+    margin-bottom: 1rem;
+  }
+  
+  section {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  /* Hero Section */
+  .hero {
+    background: linear-gradient(to right, #e3f2fd, #ffffff);
     text-align: center;
-    margin-top: 20px;
-}
-body 
-{
+    padding: 4rem 2rem;
+    border-bottom: 2px solid #dee2e6;
+  }
+  
+  .hero p {
+    font-size: 1.2rem;
+    color: #333;
+    margin-top: 1rem;
+  }
+  
+  /* Botones */
+  .contenedor-botones {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
     justify-content: center;
-    height: 100vh;
-}
-
-.contenedor-botones 
-{
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  
+  .contenedor-botones .btn {
+    min-width: 140px;
+    font-weight: 500;
+    font-size: 1rem;
+  }
+  
+  /* Sección Servicios */
+  .servicios {
+    background-color: #ffffff;
     text-align: center;
-}
+    padding: 3rem 2rem;
+  }
+  
+  .servicios ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .servicios li {
+    font-size: 1.1rem;
+    margin: 0.8rem 0;
+    color: #212529;
+  }
+  
+  /* Footer */
+  .footer {
+    background-color: #0d6efd;
+    color: white;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    font-size: 0.9rem;
+    margin-top: auto;
+  }
+  
+  /* Overlay y spinner (ya estaban bien) */
 .overlay {
     position: fixed;
     top: 0; left: 0;
@@ -42,4 +98,18 @@ body
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }  
+.galeria-animada {
+    margin: 3rem auto;
+    max-width: 950px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .galeria-animada img {
+    object-fit: cover;
+    height: 400px;
+    width: 100%;
+    transition: transform 0.6s ease-in-out;
+  }
   

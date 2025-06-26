@@ -13,15 +13,20 @@ export const routes: Routes =
     },
     {
         path:'home',
-        component: HomeComponent
+        component: HomeComponent,
+        data: { animation: 'HomePage' }
     },
     {
         path:'login',
-        loadComponent: () => import('./componentes/login/login.component').then(l=> l.LoginComponent)
+        loadComponent: () => import('./componentes/login/login.component').then(l=> l.LoginComponent),
+        data: { animation: 'LoginPage' }
+
     },
     {
         path:'registro',
-        loadComponent: () => import('./componentes/registro/registro.component').then(r=> r.RegistroComponent)
+        loadComponent: () => import('./componentes/registro/registro.component').then(r=> r.RegistroComponent),
+        data: { animation: 'RegistroPage' }
+
     }, 
     {
         path:'mi-perfil',

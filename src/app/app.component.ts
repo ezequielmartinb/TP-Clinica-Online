@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from './servicios/auth.service';
 import { environment } from '../environments/environment';
 import { createClient } from '@supabase/supabase-js';
+import { trigger, transition, style, animate, query, animateChild, group, state, keyframes } from '@angular/animations';
+
 
 const supabase = createClient(environment.apiUrl, environment.publicAnonKey);
 
@@ -11,9 +13,25 @@ const supabase = createClient(environment.apiUrl, environment.publicAnonKey);
   selector: 'app-root',
   imports: [RouterOutlet, CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
+  animations: [
+    trigger('routeAnimations', [
+      transition('LoginPage => HomePage', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition('HomePage => RegistroPage', [
+        style({ opacity: 0, transform: 'scale(0.9)' }),
+        animate('300ms ease-in', style({ opacity: 1, transform: 'scale(1)' }))
+      ]),
+      transition('* => LoginPage', [
+        style({ opacity: 0 }),
+        animate('200ms ease-in', style({ opacity: 1 }))
+      ])
+    ])
+  ]
 })
-export class AppComponent 
+export class AppComponent implements AfterViewInit
 {
   isLoggedIn: boolean = false;
   errorMessage: string = '';
@@ -33,7 +51,14 @@ export class AppComponent
       }
     });
   }
+  prepareRoute(outlet: RouterOutlet) {
+    return outlet?.activatedRouteData?.['animation'];
+  }
+  ngAfterViewInit(): void {
+    this.cd.detectChanges(); // Forzar reevaluación del binding
+  }
 
+  
   async checkSession() {
     const { data } = await supabase.auth.getSession();
     const usuario = data.session?.user;   

@@ -1,18 +1,64 @@
-
+<!-- Sección principal con animación fade al ingresar -->
 <title>Home</title>
-<h1>Bienvenidos a la Clínica Online</h1>  
-<div class="contenedor-botones">
-    <button class="btn btn-outline-primary" *ngIf="!usuarioAutenticado" routerLink="/login">Login</button>
-    <button class="btn btn-outline-primary" *ngIf="!usuarioAutenticado" routerLink="/registro">Registro</button>
-    <button class="btn btn-outline-primary" *ngIf="usuarioAutenticado" routerLink="/mi-perfil">Mi Perfil</button>
-    <button class="btn btn-outline-primary" *ngIf="usuarioAutenticado && this.rol != 'especialista'" routerLink="/solicitar-turnos">Solicitar turnos</button>
-    <button class="btn btn-outline-primary" *ngIf="usuarioAutenticado && !isAdmin" routerLink="/mis-turnos">Mis Turnos</button>
-    <button class="btn btn-outline-primary" *ngIf="isAdmin" routerLink="/admin/turnos">Turnos</button>
-    <button class="btn btn-outline-primary" *ngIf="isAdmin" routerLink="/admin/usuarios">Sección Usuarios</button>
-</div>
-
-<div *ngIf="isLoading" class="overlay">
+<section class="hero">
+    <h1>Bienvenidos a la Clínica Online</h1>
+    <p>Tu salud al alcance de un clic. Atención médica segura y sin moverte de casa.</p>
+  
+    <div class="contenedor-botones">
+      <button class="btn btn-outline-primary" *ngIf="!usuarioAutenticado" routerLink="/login">Login</button>
+      <button class="btn btn-outline-primary" *ngIf="!usuarioAutenticado" routerLink="/registro">Registro</button>
+      <button class="btn btn-outline-primary" *ngIf="usuarioAutenticado" routerLink="/mi-perfil">Mi Perfil</button>
+      <button class="btn btn-outline-primary" *ngIf="usuarioAutenticado && rol !== 'especialista'" routerLink="/solicitar-turnos">Solicitar turnos</button>
+      <button class="btn btn-outline-primary" *ngIf="usuarioAutenticado && !isAdmin" routerLink="/mis-turnos">Mis Turnos</button>
+      <button class="btn btn-outline-primary" *ngIf="isAdmin" routerLink="/admin/turnos">Turnos</button>
+      <button class="btn btn-outline-primary" *ngIf="isAdmin" routerLink="/admin/usuarios">Sección Usuarios</button>
+    </div>
+  </section>
+  
+  <!-- Carrusel con animación zoom en imágenes -->
+  <section class="galeria-animada">
+    <div id="carousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div
+          class="carousel-item"
+          *ngFor="let url of imagenes; let i = index"
+          [class.active]="i === 0"
+        >
+          <img
+            [src]="url"
+            class="d-block w-100"
+            alt="Imagen de la clínica"          
+          />
+        </div>
+      </div>
+  
+      <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      </button>
+    </div>
+  </section>
+  
+  <!-- Servicios ofrecidos -->
+  <section class="servicios">
+    <h2>¿Qué te ofrecemos?</h2>
+    <ul>
+      <li>🏥 Atención médica general y especializada</li>
+      <li>💬 Videoconsultas seguras desde donde estés</li>
+      <li>📄 Acceso a tu historia clínica digital</li>
+      <li>📆 Solicitud y gestión de turnos online</li>
+    </ul>
+  </section>
+  
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; {{ this.anoActual }} Clínica Online. Todos los derechos reservados.</p>
+  </footer>
+  
+  <!-- Overlay de carga -->
+  <div *ngIf="isLoading" class="overlay">
     <div class="spinner"></div>
     <p>Cargando...</p>
-</div>
-  
+  </div>
