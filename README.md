@@ -13,26 +13,29 @@ Aplicación web desarrollada con Angular y Firebase para la gestión integral de
 - Visualización de historia clínica.
 
 ![Registro de pacientes](https://lzvrwsqlfgdedhxagipk.supabase.co/storage/v1/object/public/fotospagina//registro-paciente.png)
+![Turnos de pacientes](https://lzvrwsqlfgdedhxagipk.supabase.co/storage/v1/object/public/fotospagina//solicitar-turno.png)
 
 ### 🧑‍⚕️ Especialista
 - Registro con validación y aprobación por parte del administrador.
 - Gestión de disponibilidad horaria.
 - Carga de historia clínica por paciente.
 
-📸 _Captura sugerida: Panel del especialista con turnos y formulario de historia clínica_
+![Registro de especialistas](https://lzvrwsqlfgdedhxagipk.supabase.co/storage/v1/object/public/fotospagina//registro-especialista.png)
+![Turnos especialistas](https://lzvrwsqlfgdedhxagipk.supabase.co/storage/v1/object/public/fotospagina//turnos-especialista.png)
 
 ### 🛠️ Administrador
 - Aprobación de especialistas.
 - Gestión de usuarios.
 - Visualización de estadísticas.
 
-📸 _Captura sugerida: Panel de administración con tabla de usuarios_
+![Gestion de usuarios](https://lzvrwsqlfgdedhxagipk.supabase.co/storage/v1/object/public/fotospagina//gestion-usuarios.png)
+![Gestion de turnos](https://lzvrwsqlfgdedhxagipk.supabase.co/storage/v1/object/public/fotospagina//gestion-turnos.png)
 
 ## 🧾 Historia Clínica
 - Registro de datos clínicos por consulta: altura, peso, temperatura, presión, y campos dinámicos personalizados.
 - Visualización por parte del paciente y el especialista.
 
-📸 _Captura sugerida: Vista de historia clínica cargada_
+![Historia clinica](https://lzvrwsqlfgdedhxagipk.supabase.co/storage/v1/object/public/fotospagina//historia-clinica.png)
 
 ## 🛠️ Tecnologías utilizadas
 - **Angular 19.2.6**
