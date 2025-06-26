@@ -1,59 +1,51 @@
-# TpClinicaOnline
+# 🏥 TP - Clínica Online
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.6.
+Aplicación web desarrollada con Angular y Firebase para la gestión integral de una clínica médica. Permite a pacientes, especialistas y administradores interactuar con el sistema de forma segura y eficiente.
 
-## Development server
+## 🌐 Demo en producción
+[Acceder a la app](https://tp-clinica-online-8e6c9.web.app/home)
 
-To start a local development server, run:
+## 🔑 Roles y funcionalidades
+
+### 👤 Paciente
+- Registro con validación de email.
+- Solicitud y cancelación de turnos.
+- Visualización de historia clínica.
+
+[Registro de pacientes] (https://lzvrwsqlfgdedhxagipk.supabase.co/storage/v1/object/public/fotospagina//registro-paciente.png)
+
+### 🧑‍⚕️ Especialista
+- Registro con validación y aprobación por parte del administrador.
+- Gestión de disponibilidad horaria.
+- Carga de historia clínica por paciente.
+
+📸 _Captura sugerida: Panel del especialista con turnos y formulario de historia clínica_
+
+### 🛠️ Administrador
+- Aprobación de especialistas.
+- Gestión de usuarios.
+- Visualización de estadísticas.
+
+📸 _Captura sugerida: Panel de administración con tabla de usuarios_
+
+## 🧾 Historia Clínica
+- Registro de datos clínicos por consulta: altura, peso, temperatura, presión, y campos dinámicos personalizados.
+- Visualización por parte del paciente y el especialista.
+
+📸 _Captura sugerida: Vista de historia clínica cargada_
+
+## 🛠️ Tecnologías utilizadas
+- **Angular 19.2.6**
+- **Firebase** (Auth, Firestore, Hosting)
+- **Bootstrap** para diseño responsivo
+
+## 📁 Estructura del proyecto
+src/ ├── app/ │   ├── components/ │   ├── pages/ │   ├── services/ │   └── models/ ├── assets/ └── environments/
+
+## ▶️ Cómo ejecutar el proyecto localmente
 
 ```bash
+git clone https://github.com/ezequielmartinb/TP-Clinica-Online.git
+cd TP-Clinica-Online
+npm install
 ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
