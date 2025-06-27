@@ -1,0 +1,126 @@
+.logs-container {
+    padding: 1.5rem;
+    background-color: #fdfdfd;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .logs-container h2 {
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    color: #333;
+  }
+  
+  .tabla-logs {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+  }
+  
+  .tabla-logs thead {
+    background-color: #f2f2f2;
+  }
+  
+  .tabla-logs th,
+  .tabla-logs td {
+    border: 1px solid #ccc;
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+  }
+  
+  .tabla-logs th {
+    font-weight: 600;
+    color: #444;
+  }
+  
+  .tabla-logs td {
+    color: #333;
+  }
+  
+  .tabla-logs tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+  
+  .tabla-logs tr:hover {
+    background-color: #eaf6ff;
+  }
+  
+  @media (max-width: 768px) {
+    .tabla-logs thead {
+      display: none;
+    }
+  
+    .tabla-logs tr {
+      display: block;
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+  
+    .tabla-logs td {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.6rem;
+      border: none;
+      border-bottom: 1px solid #eee;
+    }
+  
+    .tabla-logs td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      color: #555;
+    }
+  }
+  .grafico-container {
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  .grafico-container h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    color: #333;
+  }
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Fondo oscuro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    pointer-events: none;
+  }
+  
+  .content {
+    display: flex;
+    flex-direction: column; /* Asegura que el texto esté debajo del spinner */
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #28a745; /* Verde Supabase */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px; /* Espacio entre el spinner y el texto */
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }

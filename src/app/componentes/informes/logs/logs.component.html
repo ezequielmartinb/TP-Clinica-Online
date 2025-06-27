@@ -1,0 +1,49 @@
+<title>Logs de usuarios</title>
+<div class="logs-container">
+    
+    <div *ngIf="loading" class="overlay">
+        <div class="spinner"></div>
+        <p>Cargando...</p>
+      </div>
+  
+    <!-- Tabla de registros -->
+    <h1>Ingresos de usuarios</h1>
+    <table *ngIf="logs.length > 0" class="tabla-logs">
+      <thead>
+        <tr>
+          <th>Apellido</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let log of logs">
+          <td>{{ log.apellido }}</td>
+          <td>{{ log.nombre }}</td>
+          <td>{{ log.mail }}</td>
+          <td>{{ log.tipo_usuario.charAt(0).toUpperCase() + log.tipo_usuario.slice(1) }}</td>
+          <td>{{ log.fecha_ingreso | date:'dd/MM/yyyy HH:mm' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <p *ngIf="!loading && logs.length === 0">
+      No se encontraron ingresos registrados.
+    </p>
+  </div>
+  <canvas
+  *ngIf="!loading"
+  #chartCanvas
+  baseChart
+  [type]="'bar'"
+  [data]="barChartData"
+  [options]="barChartOptions"
+></canvas>
+
+<div class="text-center mt-4">
+<button class="btn btn-success px-4 py-2 fw-semibold" (click)="descargarPDF()">
+    📄 Descargar PDF
+</button>
+</div>
