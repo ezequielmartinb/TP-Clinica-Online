@@ -426,7 +426,7 @@ export class MisTurnosComponent implements OnInit
     } else {
       return {
         puedeCancelar: !['aceptado', 'finalizado', 'rechazado', 'cancelado'].includes(turno.estado),
-        puedeRechazar: !['aceptado', 'finalizado', 'cancelado'].includes(turno.estado),
+        puedeRechazar: !['aceptado', 'finalizado', 'cancelado', 'rechazado'].includes(turno.estado),
         puedeAceptar: !['aceptado', 'cancelado', 'rechazado', 'finalizado'].includes(turno.estado),
         puedeFinalizar: turno.estado === 'aceptado',
         puedeVerResena: !!turno.resena
