@@ -98,6 +98,6 @@ export class TurnosAdminComponent
   }
 
   puedeCancelar(turno: Turno): boolean {
-    return !['aceptado', 'finalizado', 'cancelado'].includes(turno.estado);
+    return !['finalizado', 'cancelado', 'rechazado'].includes(turno.estado);
   }
 }

@@ -16,8 +16,9 @@ const supabase = createClient(environment.apiUrl, environment.publicAnonKey);
   styleUrl: './app.component.css',
   animations: [
     trigger('routeAnimations', [
+      // 🎯 Transiciones específicas
       transition('LoginPage => HomePage', [
-        style({ opacity: 0, transform: 'translateY(20px)' }),
+        style({ opacity: 0, transform: 'translateY(-20px)' }),
         animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
       ]),
       transition('HomePage => RegistroPage', [
@@ -27,6 +28,12 @@ const supabase = createClient(environment.apiUrl, environment.publicAnonKey);
       transition('* => LoginPage', [
         style({ opacity: 0 }),
         animate('200ms ease-in', style({ opacity: 1 }))
+      ]),
+  
+      // 🌐 Transición genérica para todas las demás combinaciones
+      transition('* <=> *', [
+        style({ opacity: 0, transform: 'translateY(-10px)' }),
+        animate('250ms ease-in-out', style({ opacity: 1, transform: 'translateY(0)' }))
       ])
     ])
   ]
