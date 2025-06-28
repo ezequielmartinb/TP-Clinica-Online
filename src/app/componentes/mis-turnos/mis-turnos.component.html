@@ -48,36 +48,31 @@
         <!-- Acciones especialista -->
         <ng-container *ngIf="rolUsuario === 'especialista'">
           <button class="btn btn-success btn-sm accion-aceptar"
-                  *ngIf="accionesPermitidas(turno).puedeAceptar"
-                  (click)="aceptarTurno(turno)">Aceptar</button>
+        *ngIf="accionesPermitidas(turno).puedeAceptar"
+        (click)="aceptarTurno(turno)">Aceptar</button>
 
-          <button class="btn btn-danger btn-sm accion-cancelar"
-                  *ngIf="accionesPermitidas(turno).puedeCancelar"
-                  (click)="abrirModalAccion(turno, 'cancelar')">Cancelar</button>
+        <button class="btn btn-danger btn-sm accion-cancelar"
+                *ngIf="accionesPermitidas(turno).puedeCancelar"
+                (click)="abrirModalAccion(turno, 'cancelar')">Cancelar</button>
 
-          <button class="btn btn-outline-danger btn-sm accion-rechazar"
-                  *ngIf="accionesPermitidas(turno).puedeRechazar"
-                  (click)="abrirModalAccion(turno, 'rechazar')">Rechazar</button>
+        <button class="btn btn-outline-danger btn-sm accion-rechazar"
+                *ngIf="accionesPermitidas(turno).puedeRechazar"
+                (click)="abrirModalAccion(turno, 'rechazar')">Rechazar</button>
 
-          <button class="btn btn-primary btn-sm accion-finalizar"
-                  *ngIf="accionesPermitidas(turno).puedeFinalizar"
-                  (click)="abrirModalAccion(turno, 'finalizar')">Finalizar</button>
+        <button class="btn btn-primary btn-sm accion-finalizar"
+                *ngIf="accionesPermitidas(turno).puedeFinalizar"
+                (click)="abrirModalAccion(turno, 'finalizar')">Finalizar</button>
 
-          <button class="btn btn-outline-primary btn-sm accion-historia"
-                  *ngIf="turno.estado === 'finalizado' && !historiaClinicaPorTurno.has(turno.id)"
-                  (click)="abrirModalHistoria(turno)">Cargar historia clínica</button>
+        <button class="btn btn-outline-primary btn-sm accion-historia"
+                *ngIf="turno.estado === 'finalizado' && !historiaClinicaPorTurno.has(turno.id)"
+                (click)="abrirModalHistoria(turno)">Cargar historia clínica</button>
 
-          <button class="btn btn-secondary btn-sm accion-historia"
-                  *ngIf="historiaClinicaPorTurno.has(turno.id)"
-                  (click)="verHistoriaClinica(turno)">
-            {{ historiaActivaId === turno.id ? 'Ocultar Historia' : 'Ver Historia Clínica' }}
-          </button>
-           <!-- Ver historia clinica -->
-        <button 
-        *ngIf="historiaClinicaPorTurno.has(turno.id)" 
-        (click)="verHistoriaClinica(turno)">
-        {{ historiaActivaId === turno.id ? 'Ocultar Historia' : 'Ver Historia Clínica' }}
-      </button>
+        <button class="btn btn-secondary btn-sm accion-historia"
+                *ngIf="historiaClinicaPorTurno.has(turno.id)"
+                (click)="verHistoriaClinica(turno)">
+          {{ historiaActivaId === turno.id ? 'Ocultar Historia' : 'Ver Historia Clínica' }}
+        </button>
+        
         </ng-container>
 
         <!-- Ver reseña y motivo -->

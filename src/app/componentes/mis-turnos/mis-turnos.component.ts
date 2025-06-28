@@ -10,12 +10,13 @@ import { FiltroPacientePipe } from "../../pipes/filtro-paciente.pipe";
 import { MiEncuestaComponent } from "../mi-encuesta/mi-encuesta.component";
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { HistoriaClinicaComponent } from "../historia-clinica/historia-clinica.component";
+import { FiltroDatoExtraPipe } from "../../pipes/filtro-dato-extra.pipe";
 
 const supabase = createClient(environment.apiUrl, environment.publicAnonKey);
 
 @Component({
   selector: 'app-mis-turnos',
-  imports: [CommonModule, FormsModule, FiltroEspecialidadPipe, FiltroEspecialistaPipe, FiltroPacientePipe, MatDialogModule, HistoriaClinicaComponent],
+  imports: [CommonModule, FormsModule, FiltroEspecialidadPipe, FiltroEspecialistaPipe, FiltroPacientePipe, MatDialogModule, HistoriaClinicaComponent, FiltroDatoExtraPipe],
   templateUrl: './mis-turnos.component.html',
   styleUrl: './mis-turnos.component.css'
 })
@@ -37,6 +38,7 @@ export class MisTurnosComponent implements OnInit
   filtroEspecialistaTexto: string = '';
   filtroEspecialidadTexto: string = '';
   filtroPacienteTexto: string = '';
+  filtroDatoExtra: string = '';
   resenaActivaId: string | null = null;
   isLoading:boolean = true;
   motivoActivoId: string | null = null;
