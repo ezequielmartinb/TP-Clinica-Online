@@ -16,6 +16,20 @@
         <small *ngIf="formularioLogin.get('password')?.errors?.['required']">⚠ Debes ingresar una contraseña.</small>
         <small *ngIf="formularioLogin.get('password')?.errors?.['minlength']">⚠ La contraseña debe tener al menos 6 caracteres.</small>
       </div>
+      <!-- reCAPTCHA v2 -->
+      <div class="captcha-container">
+        <!-- 🔸 Agregamos #captcha para poder referenciarlo con @ViewChild en el TS -->
+        <re-captcha
+          #captcha
+          [siteKey]="'6LcOfHArAAAAAN1KVU4OhW3zrquNXPcvHzyW8x_g'"
+          (resolved)="onCaptchaResolved($event)"
+          formControlName="recaptcha">
+        </re-captcha>
+      </div>
+      <small *ngIf="formularioLogin.get('recaptcha')?.invalid && formularioLogin.get('recaptcha')?.touched">
+        ⚠ Debes validar el captcha.
+      </small>   
+    
 
       <!-- Botón Iniciar Sesion-->
       <button class="btn btn-success" type="submit" [disabled]="formularioLogin.invalid || isLoading">Iniciar sesión</button>
@@ -26,19 +40,19 @@
       </div>
       <div *ngIf="!isLoadingUsuarios">
         <div *ngFor="let paciente of pacientes; let i = index">
-          <button class="btn btn-outline-primary quick-btn" (click)="quickAccess(paciente)">
+          <button class="btn btn-outline-primary quick-btn" (click)="quickAccess(paciente)" [disabled]="formularioLogin.get('recaptcha')?.invalid">
             <img [src]="paciente.imagen_perfil" alt="Foto de {{ paciente.nombre }}" class="profile-img" />
             Acceso rápido a paciente {{ i + 1 }}
           </button>
         </div>       
         <div *ngFor="let especialista of especialistas; let i = index">
-          <button class="btn btn-outline-primary quick-btn" (click)="quickAccess(especialista)">
+          <button class="btn btn-outline-primary quick-btn" (click)="quickAccess(especialista)" [disabled]="formularioLogin.get('recaptcha')?.invalid">
             <img [src]="especialista.imagen_perfil" alt="Foto de {{ especialista.nombre }}" class="profile-img" />
             Acceso rápido a especialista {{ i + 1 }}
           </button>
         </div>       
         <div *ngIf="administrador">
-          <button class="btn btn-outline-primary" (click)="quickAccess(administrador)">
+          <button class="btn btn-outline-primary" (click)="quickAccess(administrador)" [disabled]="formularioLogin.get('recaptcha')?.invalid">
             <img [src]="administrador.imagen_perfil" alt="Foto de {{ administrador.nombre }}" class="profile-img" />
             Acceso rápido administrador
           </button>

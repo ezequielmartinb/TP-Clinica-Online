@@ -113,5 +113,16 @@ input {
     border-radius: 50%;
     object-fit: cover;
   }
+  .captcha-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    transform: scale(0.95); /* opcional: para compactarlo un poco */
+    transition: transform 0.3s ease;
+  }
+  
+  .captcha-container:hover {
+    transform: scale(1); /* efecto sutil al hacer hover */
+  }
   
   

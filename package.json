@@ -29,6 +29,7 @@
     "moment-timezone": "^0.6.0",
     "ng-recaptcha": "^13.2.1",
     "ng2-charts": "^8.0.0",
+    "ngx-captcha": "^13.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "xlsx": "^0.18.5",

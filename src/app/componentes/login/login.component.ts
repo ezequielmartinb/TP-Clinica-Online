@@ -39,9 +39,20 @@ export class LoginComponent {
     {
       mail: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)]),
+      recaptcha: new FormControl('', [Validators.required])
     });
     this.cargarUsuarios();   
   }
+  onCaptchaResolved(captchaResponse: string | null): void {
+    if (captchaResponse) {
+      this.formularioLogin.get('recaptcha')?.setValue(captchaResponse);
+    } else {
+      this.formularioLogin.get('recaptcha')?.setValue(null);
+      // Si querés, podés también marcar el control como inválido manualmente
+      this.formularioLogin.get('recaptcha')?.setErrors({ invalid: true });
+    }
+  }
+  
   
   async login() {
     this.errorMessage = '';
@@ -139,9 +150,8 @@ export class LoginComponent {
     this.formularioLogin.patchValue(
     {
       mail: usuario.mail,
-      password: usuario.contrasena
+      password: usuario.contrasena,
     });
-  
     console.log(`Acceso rápido a: ${usuario.nombre} ${usuario.apellido}`);
   }    
 }
