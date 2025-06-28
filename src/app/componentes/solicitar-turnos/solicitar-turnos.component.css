@@ -224,3 +224,41 @@ button:disabled:not(.btn-ocupado) {
   font-weight: 600;
   color: #333;
 }
+
+.grid-bloques-rectangulares {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.btn-turno {
+  padding: 10px 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 130px;
+  background-color: #f4f4f4;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.btn-turno:hover {
+  background-color: #e0e0e0;
+}
+
+.btn-ocupado {
+  background-color: #ffdddd !important;
+  color: #a10000 !important;
+  border-color: #e4bcbc;
+  cursor: not-allowed;
+}
+
+.btn-pasado {
+  background-color: #eeeeee !important;
+  color: #777 !important;
+  border-color: #ddd;
+  cursor: not-allowed;
+}

@@ -43,7 +43,12 @@ export class SolicitarTurnosComponent implements OnInit
       await this.cargarPacientes();
     }
     this.generarProximosDias();
+    await Promise.all(
+      this.proximosDias.map(d => this.cargarTurnosDelEspecialistaPorFecha(d))
+    );
+    
     console.log('especialidades: ', this.especialidades);
+    
     
   }
     
@@ -330,8 +335,83 @@ export class SolicitarTurnosComponent implements OnInit
   }  
   async seleccionarEspecialista(especialista: Especialista) {
     this.especialistaSeleccionado = especialista;
-    this.fechaSeleccionada = null; // Reiniciás la fecha si ya estaba seleccionada
-    await this.cargarHorariosDelEspecialista(); // Cargás los horarios para ese especialista
-    this.generarProximosDias(); // Calculás las fechas disponibles
+    this.fechaSeleccionada = null;
+  
+    await this.cargarHorariosDelEspecialista(); // Cargás los horarios
+    this.generarProximosDias(); // Calculás las fechas
+  
+    this.turnosPorFecha = {}; // Limpiás los turnos anteriores si cambiás de especialista
+  
+    // 🔄 Cargás todos los turnos por cada fecha
+    await Promise.all(
+      this.proximosDias.map(dia => this.cargarTurnosDelEspecialistaPorFecha(dia))
+    );
   }
+  obtenerHorariosParaDia(fecha: Date): HorarioEspecialista[] {
+    const diaSemana = this.diasSemana[fecha.getDay()].toLowerCase(); // ['domingo', 'lunes', ...]
+    return this.horarioEspecialista.filter(h => h.dia_semana.toLowerCase() === diaSemana);
+  }
+  formatearTurnoCompleto(fecha: Date, hora: string): string {
+    const [h, m] = hora.split(':').map(Number);
+    const f = new Date(fecha);
+    f.setHours(h, m, 0);
+  
+    const dia = String(f.getDate()).padStart(2, '0');
+    const mes = String(f.getMonth() + 1).padStart(2, '0');
+    const horaFormateada = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  
+    return `${dia}/${mes} ${horaFormateada}`;
+  }
+  async onSolicitarTurnoDesdeLista(dia: string, hora: string, fecha: Date): Promise<void> {
+    this.fechaSeleccionada = fecha;
+  
+    const fechaStr = fecha.toISOString().split('T')[0];
+    delete this.turnosPorFecha[fechaStr]; // borrás el cache viejo por si se reutiliza
+  
+    await this.onSolicitarTurno(dia, hora);
+    await this.cargarTurnosDelEspecialistaPorFecha(fecha); // recargás para deshabilitar visualmente
+  }
+  
+  turnosPorFecha: { [fecha: string]: Turno[] } = {};
+
+  async cargarTurnosDelEspecialistaPorFecha(fecha: Date): Promise<void> {
+    if (!this.especialistaSeleccionado) return;
+  
+    const fechaStr = fecha.toISOString().split('T')[0];
+  
+    const { data, error } = await supabase
+      .from('turnos')
+      .select('id, fecha, hora, estado, id_paciente, id_especialista, especialidad_id')
+      .eq('id_especialista', this.especialistaSeleccionado.id)
+      .eq('fecha', fechaStr);
+      
+    if (error) {
+      console.error(`Error al cargar turnos para ${fechaStr}:`, error.message);
+      this.turnosPorFecha[fechaStr] = [];
+      return;
+    }
+  
+    this.turnosPorFecha[fechaStr] = data || [];
+    
+  }  
+  
+  bloqueOcupadoEnFecha(hora: string, fecha: Date): boolean {
+    const fechaStr = fecha.toISOString().split('T')[0];
+    const turnos = this.turnosPorFecha[fechaStr] || [];
+  
+    return turnos.some(t =>
+      t.hora?.substring(0, 5) === hora && // comparás "13:00" con "13:00"
+      (t.estado === 'pendiente' || t.estado === 'aceptado')
+    );
+  }
+  
+
+  esBloquePasadoEnFecha(hora: string, fecha: Date): boolean {
+    const ahora = new Date();
+    const f = new Date(fecha);
+    const [h, m] = hora.split(':').map(Number);
+    f.setHours(h, m, 0);
+    return f < ahora;
+  }
+  
 }

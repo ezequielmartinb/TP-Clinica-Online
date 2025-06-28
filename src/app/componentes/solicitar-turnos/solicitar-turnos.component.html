@@ -46,48 +46,35 @@
   </select>
 </section>
 
-<!-- Fechas disponibles -->
-<section *ngIf="proximosDias.length > 0" class="dias-disponibles">
-  <label>Seleccioná una fecha:</label>
-  <div class="botones-fecha">
-    <button *ngFor="let dia of proximosDias" (click)="seleccionarFecha(dia)">
-      {{ dia | date: 'EEEE d/M' }}
-    </button>
-  </div>
-</section>
+<section *ngIf="proximosDias.length > 0">
+  <label>Turnos disponibles:</label>
 
-<!-- Horarios disponibles -->
-<section *ngIf="fechaSeleccionada">
-  <label>Horarios disponibles para {{ fechaSeleccionada | date: 'fullDate' }}:</label>
-  <div class="grid-bloques">
-    <ng-container *ngFor="let h of obtenerHorariosParaFechaSeleccionada()">
-      <div *ngFor="let bloque of generarBloques(h.hora_inicio, h.hora_fin)" class="bloque-item">
-        {{ bloque }}
-        <button 
-          (click)="onSolicitarTurno(h.dia_semana, bloque)" 
-          [disabled]="bloqueOcupado(bloque) || esBloquePasado(bloque)"
-          [ngClass]="{
-            'btn-ocupado': bloqueOcupado(bloque),
-            'btn-pasado': esBloquePasado(bloque)
-          }"
-          [title]="
-            bloqueOcupado(bloque)
-              ? 'Este horario ya fue reservado'
-              : esBloquePasado(bloque)
-                ? 'Este horario ya pasó'
-                : 'Disponible'
-          ">
-          {{
-            bloqueOcupado(bloque) || esBloquePasado(bloque)
-              ? 'No disponible'
-              : 'Solicitar'
-          }}
-        </button>
-      </div>
+  <div class="grid-bloques-rectangulares">
+    <ng-container *ngFor="let dia of proximosDias">
+      <ng-container *ngFor="let h of obtenerHorariosParaDia(dia)">
+        <ng-container *ngFor="let bloque of generarBloques(h.hora_inicio, h.hora_fin)">
+          <button
+            class="btn-turno"
+            (click)="onSolicitarTurnoDesdeLista(h.dia_semana, bloque, dia)"
+            [disabled]="bloqueOcupadoEnFecha(bloque, dia) || esBloquePasadoEnFecha(bloque, dia)"
+            [ngClass]="{
+              'btn-ocupado': bloqueOcupadoEnFecha(bloque, dia),
+              'btn-pasado': esBloquePasadoEnFecha(bloque, dia)
+            }"
+            [title]="
+              bloqueOcupadoEnFecha(bloque, dia)
+                ? 'Este turno ya fue reservado'
+                : esBloquePasadoEnFecha(bloque, dia)
+                  ? 'Este turno ya pasó'
+                  : 'Disponible'
+            ">
+            {{ formatearTurnoCompleto(dia, bloque) }}
+          </button>
+        </ng-container>
+      </ng-container>
     </ng-container>
   </div>
 </section>
-
 <!-- Mensaje de resultado -->
 <div *ngIf="mensajeTurno" [ngClass]="{
   'mensaje-exito': tipoMensajeTurno === 'exito',
