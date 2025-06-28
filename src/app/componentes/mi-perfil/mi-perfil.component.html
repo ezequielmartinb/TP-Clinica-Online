@@ -9,7 +9,7 @@
     <p class="perfil-info"><strong>DNI:</strong> {{ paciente.dni | dni}}</p>
     <p class="perfil-info"><strong>Obra Social:</strong> {{ paciente.obra_social?.toUpperCase() }}</p>
     <button class="boton-descarga" (click)="mostrarHistoria = !mostrarHistoria">
-      {{ mostrarHistoria ? 'Ocultar historia clínica' : 'Mostrar historia clínica' }}
+      {{ mostrarHistoria ? 'Mostrar historia clínica' : 'Ocultar historia clínica' }}
     </button>      
     <br>
     <button class="boton-descarga" (click)="descargarHistoriaClinicaPDF()">
@@ -98,7 +98,7 @@
         </form>        
     </div>    
 </div>
-<div class="historia-clinica-container" *ngIf="mostrarHistoria && rol==='paciente'">
+<div class="historia-clinica-container" *ngIf="!mostrarHistoria && rol==='paciente'">
   <ng-container *ngIf="historiaClinica.length > 0; else sinHistoria">
     <h2>Historia clínica</h2>
     <div class="entrada-historia" *ngFor="let entrada of historiaClinica">

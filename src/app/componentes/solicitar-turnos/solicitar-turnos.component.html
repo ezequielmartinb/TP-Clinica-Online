@@ -10,10 +10,10 @@
   >
     <img 
       [src]="obtenerUrlImagen(especialidad)" 
+      [title]="especialidad.nombre"
       alt="{{ especialidad.nombre }}" 
       class="imagen-especialidad"
     />
-    <p>{{ especialidad.nombre }}</p>
   </div>
 </section>
 
@@ -25,12 +25,12 @@
     (click)="seleccionarEspecialista(especialista)"
     [ngClass]="{ 'seleccionado': especialistaSeleccionado?.id === especialista.id }"
   >
+  <p>{{ especialista.apellido }}, {{ especialista.nombre }}</p>
     <img 
       [src]="especialista.imagen_perfil" 
       alt="{{ especialista.nombre }}" 
       class="imagen-especialista"
     />
-    <p>{{ especialista.apellido }}, {{ especialista.nombre }}</p>
   </div>
 </section>
 
