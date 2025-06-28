@@ -8,6 +8,10 @@
     <p class="perfil-info"><strong>Edad:</strong> {{ paciente.edad }}</p>
     <p class="perfil-info"><strong>DNI:</strong> {{ paciente.dni | dni}}</p>
     <p class="perfil-info"><strong>Obra Social:</strong> {{ paciente.obra_social?.toUpperCase() }}</p>
+    <button class="boton-descarga" (click)="mostrarHistoria = !mostrarHistoria">
+      {{ mostrarHistoria ? 'Ocultar historia clínica' : 'Mostrar historia clínica' }}
+    </button>      
+    <br>
     <button class="boton-descarga" (click)="descargarHistoriaClinicaPDF()">
       📄 Descargar historia clínica PDF
     </button>       
@@ -94,6 +98,31 @@
         </form>        
     </div>    
 </div>
+<div class="historia-clinica-container" *ngIf="mostrarHistoria && rol==='paciente'">
+  <ng-container *ngIf="historiaClinica.length > 0; else sinHistoria">
+    <h2>Historia clínica</h2>
+    <div class="entrada-historia" *ngFor="let entrada of historiaClinica">
+      <p><strong>📅 Fecha:</strong> {{ entrada.fecha | date:'shortDate' }}</p>
+      <p><strong>📏 Altura:</strong> {{ entrada.altura }} m</p>
+      <p><strong>⚖️ Peso:</strong> {{ entrada.peso }} kg</p>
+      <p><strong>🌡️ Temperatura:</strong> {{ entrada.temperatura }} °C</p>
+      <p><strong>💓 Presión:</strong> {{ entrada.presion }}</p>
+      <div *ngIf="entrada.datos_extra && (entrada.datos_extra | keyvalue).length > 0">
+        <p><strong>🧾 Datos extra:</strong></p>
+        <ul>
+          <li *ngFor="let item of entrada.datos_extra">
+            <strong>{{ item.clave }}:</strong> {{ item.valor }}
+          </li>
+        </ul>
+      </div>      
+      <hr>
+    </div>
+  </ng-container>
+  <ng-template #sinHistoria>
+    <p>📭 No hay historia clínica registrada para este paciente.</p>
+  </ng-template>
+</div>
+
 
 <div *ngIf="isLoading" class="overlay">
     <div class="spinner"></div>

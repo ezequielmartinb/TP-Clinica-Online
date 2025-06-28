@@ -172,3 +172,53 @@ small
   .boton-descarga:hover {
     background-color: #45a049;
   }
+  .historia-clinica-container {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f8f9fa; /* gris muy claro */
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .historia-clinica-container h3 {
+    margin-bottom: 16px;
+    color: #343a40;
+    font-size: 1.4em;
+  }
+  
+  .historia-clinica-container p {
+    margin: 4px 0;
+    color: #212529;
+  }
+  
+  .historia-clinica-container pre {
+    background-color: #e9ecef;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    overflow-x: auto;
+  }
+  
+  .historia-clinica-container hr {
+    margin: 20px 0;
+    border: none;
+    border-top: 1px solid #ced4da;
+  }
+  
+  .boton-ver-historia {
+    margin-bottom: 10px;
+    background-color: #0d6efd;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 5px;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .boton-ver-historia:hover {
+    background-color: #0b5ed7;
+  }

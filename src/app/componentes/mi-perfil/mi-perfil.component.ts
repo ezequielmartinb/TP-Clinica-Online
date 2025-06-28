@@ -34,6 +34,8 @@ export class MiPerfilComponent {
   especialidades_de_especialistas: string[] = [];
   cargandoHorario:boolean = false;
   horarioGuardadoConExito:boolean = false;
+  mostrarHistoria = false;
+  historiaClinica: HistoriaClinica[] = [];
 
 
   constructor(private fb: FormBuilder)
@@ -44,7 +46,7 @@ export class MiPerfilComponent {
   
   async ngOnInit() 
   {
-    this.isLoading = true;
+    this.isLoading = true;    
     this.rol = localStorage.getItem('rol');
     this.mail = localStorage.getItem('mail');
     this.horarioForm = this.fb.group({
@@ -118,11 +120,14 @@ export class MiPerfilComponent {
         }  
       }          
     }
+    await this.cargarHistoriaClinica();
     this.isLoading = false;
     console.log("El paciente es: ", this.paciente);    
     console.log("El especialista es: ", this.especialista);    
     console.log("Horarios del especialista: ", this.horarios);    
     console.log("Especialidades: ", this.especialidades_de_especialistas);    
+    console.log("Historia clinica: ", this.historiaClinica);
+    
   }
   toggleFormulario() 
   {
@@ -197,6 +202,44 @@ export class MiPerfilComponent {
       }));
     }
   }  
+  async cargarHistoriaClinica() {
+    this.mostrarHistoria = !this.mostrarHistoria;
+  
+    if (this.mostrarHistoria && this.historiaClinica.length === 0 && this.paciente != null) {
+      // 1. Buscar turnos del paciente
+      const { data: turnos, error: errorTurnos } = await supabase
+        .from('turnos')
+        .select('id')
+        .eq('id_paciente', this.paciente.id);
+  
+      if (errorTurnos) {
+        console.error('Error al obtener turnos:', errorTurnos.message);
+        return;
+      }
+  
+      const idsTurnos = turnos.map(t => t.id);
+  
+      if (idsTurnos.length === 0) {
+        this.historiaClinica = [];
+        return;
+      }
+  
+      // 2. Buscar historia clínica para esos turnos
+      const { data: historias, error: errorHistorias } = await supabase
+        .from('historia_clinica')
+        .select('fecha, altura, peso, temperatura, presion, datos_extra')
+        .in('id_turno', idsTurnos)
+        .order('fecha', { ascending: false });
+  
+      if (errorHistorias) {
+        console.error('Error al obtener historias clínicas:', errorHistorias.message);
+        return;
+      }
+  
+      this.historiaClinica = historias as HistoriaClinica[];
+    }
+  } 
+  
   async descargarHistoriaClinicaPDF() {
     try {
       // Obtener los turnos del paciente
