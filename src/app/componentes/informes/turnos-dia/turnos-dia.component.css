@@ -1,0 +1,21 @@
+.chart-container {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  table thead th {
+    font-size: 1rem;
+    text-transform: uppercase;
+  }
+  
+  table tbody td {
+    vertical-align: middle;
+  }
+  
+  button {
+    min-width: 160px;
+  }

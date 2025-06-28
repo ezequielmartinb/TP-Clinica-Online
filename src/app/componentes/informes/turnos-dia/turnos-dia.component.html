@@ -1,0 +1,41 @@
+<title>Turnos por día</title>
+<h1 class="text-center mt-4 mb-4 text-primary">📅 Turnos por Día</h1>
+<button class="btn btn-outline-secondary px-4 me-3" [routerLink]="['/admin/informes']">
+    ⬅️ Atrás
+</button>
+<!-- Gráfico de barras -->
+<div class="chart-container rounded shadow-sm p-3 bg-white" style="height: 400px;">
+    <canvas
+    #chartCanvas
+    baseChart
+    [type]="'bar'"
+    [data]="barChartData"
+    [options]="barChartOptions">
+  </canvas>  
+</div>
+
+<!-- Tabla -->
+<table class="table table-hover table-bordered table-striped mt-5 shadow-sm">
+  <thead class="table-primary">
+    <tr>
+      <th class="text-center">Fecha</th>
+      <th class="text-center">Cantidad de Turnos</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let dato of datosTabla">
+      <td class="text-center fw-medium">{{ dato.fecha }}</td>
+      <td class="text-center fw-bold">{{ dato.cantidad }}</td>
+    </tr>
+  </tbody>
+</table>
+<div class="alert alert-light shadow-sm mt-4 px-4 py-3" style="white-space: pre-wrap; line-height: 1.6;">
+    {{ generarInformeTurnosPorDia() }}
+</div>
+
+<!-- Botones de acción -->
+<div class="text-center mt-4">  
+  <button class="btn btn-success px-4" (click)="descargarPDF()">
+    📄 Descargar PDF
+  </button>
+</div>

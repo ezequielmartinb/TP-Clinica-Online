@@ -78,6 +78,11 @@ export const routes: Routes =
         canActivate: [authGuard]
     },
     {
+        path:'admin/informes/turnos-por-dia',
+        loadComponent: () => import('./componentes/informes/turnos-dia/turnos-dia.component').then(t=> t.TurnosDiaComponent),
+        canActivate: [authGuard]
+    },
+    {
         path:'**',
         component:ErrorComponent
     }
