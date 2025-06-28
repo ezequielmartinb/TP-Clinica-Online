@@ -56,6 +56,7 @@ export class MisTurnosComponent implements OnInit
   historiaClinicaPorTurno = new Set<string>();
   historiaSeleccionada: any = null;
   historiaActivaId: string | null = null;
+  historiaClinicaMap = new Map<string, any>();
 
 
   constructor(private dialog: MatDialog) {}
@@ -65,9 +66,7 @@ export class MisTurnosComponent implements OnInit
     const rol = localStorage.getItem('rol'); // debería ser 'paciente' o 'especialista'
     this.rolUsuario = rol === 'especialista' ? 'especialista' : 'paciente';
     this.usuarioId = localStorage.getItem('id_usuario');
-
-    this.inicializarDatos();
-    
+    this.inicializarDatos();    
   }
   async inicializarDatos() 
   {
@@ -85,6 +84,7 @@ export class MisTurnosComponent implements OnInit
     await this.cargarEspecialistas();
     await this.cargarEncuestas();
     await this.cargarCalificaciones();
+    await this.cargarHistoriasClinicasMap();
     this.isLoading = false;
   }
   
@@ -172,9 +172,22 @@ export class MisTurnosComponent implements OnInit
       return;
     }
   
-    this.historiaClinicaPorTurno = new Set(historias.map(h => h.id_turno));
+    this.historiaClinicaPorTurno = new Set(historias.map(h => h.id_turno)); 
   }  
+  async cargarHistoriasClinicasMap() {
+    const { data: historias, error } = await supabase
+      .from('historia_clinica')
+      .select('*');
   
+    if (error) {
+      console.error('Error al obtener historias clínicas:', error);
+      return;
+    }    
+    this.historiaClinicaMap.clear();
+    historias.forEach(historia => {
+      this.historiaClinicaMap.set(historia.id_turno, historia);
+    });
+  }  
   getNombrePaciente(id: string): string 
   {   
     const paciente = this.pacientes.find(p => p.id === id);    
