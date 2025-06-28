@@ -1,0 +1,58 @@
+<title *ngIf="this.router.url.includes('turnos-solicitados-por-medico-en-lapso')">Turnos solicitados por especialistas en un lapso de tiempo</title>
+<h1 *ngIf="this.router.url.includes('turnos-solicitados-por-medico-en-lapso')">Turnos solicitados por especialistas en un lapso de tiempo</h1>
+<title *ngIf="this.router.url.includes('turnos-finalizado-por-medico-en-lapso')">Turnos finalizados por especialistas en un lapso de tiempo</title>
+<h1 *ngIf="this.router.url.includes('turnos-finalizado-por-medico-en-lapso')">Turnos finalizados por especialistas en un lapso de tiempo</h1>
+<div class="filtros">    
+    <button class="btn btn-outline-secondary px-4 py-2" [routerLink]="['/admin/informes']">
+        ⬅️ Atrás
+    </button>
+    <label>
+        Especialista:
+        <select [(ngModel)]="especialistaSeleccionado">
+          <option value="todos">Todos</option>
+          <option *ngFor="let esp of especialistas" [value]="esp.id">
+            {{ esp.nombre }}
+          </option>
+        </select>
+    </label>  
+    <label>
+      Desde:
+      <input type="date" [(ngModel)]="fechaDesde" />
+    </label>  
+    <label>
+      Hasta:
+      <input type="date" [(ngModel)]="fechaHasta" />
+    </label>  
+    <button (click)="ngOnInit()">Actualizar</button>
+  </div>  
+  <div class="grafico-container">
+    <canvas
+      baseChart
+      #chartCanvas
+      [data]="barChartData"
+      [options]="barChartOptions"
+      [type]="'bar'"
+    ></canvas>
+  </div>  
+  <div class="tabla">
+    <h1>Detalle</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Especialista</th>
+          <th>Cantidad de turnos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let dato of datosTabla">
+          <td>{{ dato.nombre }}</td>
+          <td>{{ dato.cantidad }}</td>
+        </tr>
+      </tbody>
+    </table>
+</div>  
+<div class="text-center mt-4">
+    <button class="btn btn-success px-4 py-2 fw-semibold" (click)="descargarPDF()">
+        📄 Descargar PDF
+    </button>
+</div>

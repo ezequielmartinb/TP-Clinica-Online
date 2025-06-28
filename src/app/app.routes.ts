@@ -88,6 +88,16 @@ export const routes: Routes =
         canActivate: [authGuard]
     },
     {
+        path:'admin/informes/turnos-solicitados-por-medico-en-lapso',
+        loadComponent: () => import('./componentes/informes/turnos-por-estado-por-medico-lapso-tiempo/turnos-por-estado-por-medico-lapso-tiempo.component').then(t=> t.TurnosPorEstadoPorMedicoLapsoTiempoComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path:'admin/informes/turnos-finalizado-por-medico-en-lapso',
+        loadComponent: () => import('./componentes/informes/turnos-por-estado-por-medico-lapso-tiempo/turnos-por-estado-por-medico-lapso-tiempo.component').then(t=> t.TurnosPorEstadoPorMedicoLapsoTiempoComponent),
+        canActivate: [authGuard]
+    },
+    {
         path:'**',
         component:ErrorComponent
     }
