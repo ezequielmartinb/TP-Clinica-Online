@@ -1,99 +1,267 @@
+/* 🎯 INPUTS */
+input.form-control {
+  margin-bottom: 1rem;
+  max-width: 400px;
+  display: block;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
 
-  
-  input.form-control {
-    margin-bottom: 1rem;
-    max-width: 400px;
-    display: block;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-  }
-  
-  .table {
-    border: 1px solid #ddd;
-    background-color: #fff;
-  }
-  
-  .table thead th {
-    background-color: #e9f3ff;
-    color: #003366;
-    text-align: center;
-  }
-  
-  .table tbody td {
-    vertical-align: middle;
-    text-align: center;
-  }
-  
-  strong {
-    color: #0d6efd;
-  }
-  
-  button {
-    margin: 3px;
-  }
-  
-  button.btn {
-    font-size: 0.85rem;
-    padding: 0.3rem 0.6rem;
-    border-radius: 4px;
-  }
-  
-  .mt-2 {
-    margin-top: 0.75rem;
-  }
-  
-  textarea.form-control {
-    resize: vertical;
-    max-width: 100%;
-    border-radius: 6px;
-  }
-  
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  td strong {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    background-color: #eef2f8;
-  }
-  
-  td strong.PENDIENTE {
-    background-color: #fff3cd;
-    color: #856404;
-  }
-  
-  td strong.ACEPTADO {
-    background-color: #d4edda;
-    color: #155724;
-  }
-  
-  td strong.CANCELADO,
-  td strong.RECHAZADO {
-    background-color: #f8d7da;
-    color: #721c24;
-  }
-  .overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    font-size: 18px;
+/* 🩺 TEXTAREAS */
+textarea.form-control {
+  resize: vertical;
+  max-width: 100%;
+  border-radius: 6px;
+}
+
+/* Contenedor general */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #dee2e6;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-size: 0.95rem;
+}
+
+/* Encabezado */
+.table thead th {
+  background-color: #e9f3ff;
+  color: #003366;
+  font-weight: 600;
+  text-align: center;
+  padding: 12px 10px;
+}
+
+/* Cuerpo */
+.table tbody td {
+  text-align: center;
+  vertical-align: middle;
+  padding: 10px;
+  border-top: 1px solid #dee2e6;
+}
+
+/* Filas alternadas */
+.table-striped tbody tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #eef6fc;
+  transition: background-color 0.2s ease;
+}
+
+/* Resaltado de estado */
+td strong {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: #eef2f8;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+td strong.PENDIENTE {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+td strong.ACEPTADO {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+td strong.FINALIZADO {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+td strong.CANCELADO,
+td strong.RECHAZADO {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* 🔘 BOTONES GENERALES */
+button {
+  margin: 3px;
+  transition: all 0.2s ease-in-out;
+}
+
+button.btn {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+button.btn:hover {
+  transform: scale(1.04);
+  opacity: 0.9;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 🎨 BOTONES PERSONALIZADOS */
+.btn-aceptar {
+  background-color: #198754;
+  color: white;
+  border: none;
+}
+
+.btn-cancelar {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+}
+
+.btn-finalizar {
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+}
+
+.btn-ver {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+}
+
+/* ⭐️ ESTRELLAS DE CALIFICACIÓN */
+.estrellas {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  gap: 0.25rem;
+  position: relative;
+}
+
+.estrellas input[type="radio"] {
+  display: none;
+}
+
+.estrellas label {
+  font-size: 2rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.estrellas input[type="radio"]:checked ~ label,
+.estrellas label:hover,
+.estrellas label:hover ~ label {
+  color: #ffc107;
+}
+
+/* 🧊 MODALES */
+.modal-content {
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.modal-header .modal-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #0d6efd;
+}
+
+/* ⏳ OVERLAY DE CARGA */
+.overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 18px;
+  z-index: 1000;
 }
 
 .spinner {
-    width: 50px; height: 50px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #3498db;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+  width: 50px; 
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}/* Estilos base para todos los botones de acciones */
+td button {
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  margin: 3px 2px;
+  border-radius: 4px;
+  font-weight: 500;
+  border: none;
+  transition: all 0.2s ease;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Hover y estados visuales */
+td button:hover {
+  transform: scale(1.04);
+  opacity: 0.92;
+  cursor: pointer;
+}
+
+/* Tipos de acciones - paciente */
+td button.accion-cancelar {
+  background-color: #dc3545;
+  color: #fff;
+}
+td button.accion-encuesta {
+  background-color: #17a2b8;
+  color: #fff;
+}
+td button.accion-calificar {
+  background-color: #ffc107;
+  color: #000;
+}
+
+/* Tipos de acciones - especialista */
+td button.accion-aceptar {
+  background-color: #28a745;
+  color: #fff;
+}
+td button.accion-rechazar {
+  background-color: #c82333;
+  color: #fff;
+}
+td button.accion-finalizar {
+  background-color: #007bff;
+  color: #fff;
+}
+td button.accion-ver {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+/* Ver reseña / motivo */
+td button.accion-reseña,
+td button.accion-motivo {
+  background-color: #f8f9fa;
+  border: 1px solid #ccc;
+  color: #333;
+}
+
+/* Deshabilitado visual */
+td button:disabled {
+  background-color: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
 }

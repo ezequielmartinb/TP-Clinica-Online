@@ -1,5 +1,6 @@
 <title>Turnos</title>
 <h1>Turnos</h1>
+
 <!-- Filtros -->
 <div class="mb-3">
   <input
@@ -39,18 +40,28 @@
       <td>{{ getNombreEspecialista(turno.id_especialista) }}</td>
       <td>{{ getNombreEspecialidad(turno.especialidad_id) }}</td>
       <td>{{ getNombrePaciente(turno.id_paciente) }}</td>
-      <td><strong [ngClass]="turno.estado.toUpperCase()">{{ turno.estado | uppercase }}</strong></td>
+      <td>
+        <strong [ngClass]="turno.estado.toUpperCase()">
+          {{ turno.estado | uppercase }}
+        </strong>
+      </td>
 
       <td>
-        <button *ngIf="puedeCancelar(turno)" (click)="abrirFormulario(turno.id)">Cancelar</button>
+        <!-- Botón de cancelación -->
+        <button
+          *ngIf="puedeCancelar(turno)"
+          class="btn btn-danger btn-sm accion-cancelar"
+          (click)="abrirFormulario(turno.id)">
+          Cancelar
+        </button>
 
         <!-- Formulario de cancelación -->
         <div *ngIf="formularioActivoId === turno.id" class="mt-2">
           <label><strong>Motivo de cancelación:</strong></label>
           <textarea [(ngModel)]="comentarioCancelacion" class="form-control mt-1" rows="3"></textarea>
           <div class="mt-2 d-flex gap-2">
-            <button class="btn btn-success btn-sm" (click)="cancelarTurno(turno)">Confirmar</button>
-            <button class="btn btn-secondary btn-sm" (click)="cerrarFormulario()">Cerrar</button>
+            <button class="btn btn-success btn-sm btn-aceptar" (click)="cancelarTurno(turno)">Confirmar</button>
+            <button class="btn btn-secondary btn-sm btn-ver" (click)="cerrarFormulario()">Cerrar</button>
           </div>
         </div>
       </td>

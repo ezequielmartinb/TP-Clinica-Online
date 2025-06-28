@@ -40,18 +40,38 @@
       <td>
         <!-- Acciones paciente -->
         <ng-container *ngIf="rolUsuario === 'paciente'">
-          <button *ngIf="accionesPermitidas(turno).puedeCancelar" (click)="abrirModalAccion(turno, 'cancelar')">Cancelar</button>
-          <button *ngIf="accionesPermitidas(turno).puedeEncuestar && !turnosEncuestados.has(turno.id)" (click)="abrirEncuestaModal(turno)">Encuesta</button>
-          <button *ngIf="accionesPermitidas(turno).puedeCalificar && !turnosCalificados.has(turno.id)" (click)="abrirCalificacionModal(turno)">Calificar</button>
+          <button class="btn btn-danger btn-sm accion-cancelar" *ngIf="accionesPermitidas(turno).puedeCancelar" (click)="abrirModalAccion(turno, 'cancelar')">Cancelar</button>
+          <button class="btn btn-info btn-sm accion-encuesta" *ngIf="accionesPermitidas(turno).puedeEncuestar && !turnosEncuestados.has(turno.id)" (click)="abrirEncuestaModal(turno)">Encuesta</button>
+          <button class="btn btn-warning btn-sm accion-calificar" *ngIf="accionesPermitidas(turno).puedeCalificar && !turnosCalificados.has(turno.id)" (click)="abrirCalificacionModal(turno)">Calificar</button>
         </ng-container>
 
         <!-- Acciones especialista -->
         <ng-container *ngIf="rolUsuario === 'especialista'">
-          <button *ngIf="accionesPermitidas(turno).puedeAceptar" (click)="aceptarTurno(turno)">Aceptar</button>
-          <button *ngIf="accionesPermitidas(turno).puedeCancelar" (click)="abrirModalAccion(turno, 'cancelar')">Cancelar</button>
-          <button *ngIf="accionesPermitidas(turno).puedeRechazar" (click)="abrirModalAccion(turno, 'rechazar')">Rechazar</button>
-          <button *ngIf="accionesPermitidas(turno).puedeFinalizar" (click)="abrirModalAccion(turno, 'finalizar')">Finalizar</button>
-          <button *ngIf="turno.estado === 'finalizado' && !historiaClinicaPorTurno.has(turno.id)" (click)="abrirModalHistoria(turno)">Cargar historia clínica</button>
+          <button class="btn btn-success btn-sm accion-aceptar"
+                  *ngIf="accionesPermitidas(turno).puedeAceptar"
+                  (click)="aceptarTurno(turno)">Aceptar</button>
+
+          <button class="btn btn-danger btn-sm accion-cancelar"
+                  *ngIf="accionesPermitidas(turno).puedeCancelar"
+                  (click)="abrirModalAccion(turno, 'cancelar')">Cancelar</button>
+
+          <button class="btn btn-outline-danger btn-sm accion-rechazar"
+                  *ngIf="accionesPermitidas(turno).puedeRechazar"
+                  (click)="abrirModalAccion(turno, 'rechazar')">Rechazar</button>
+
+          <button class="btn btn-primary btn-sm accion-finalizar"
+                  *ngIf="accionesPermitidas(turno).puedeFinalizar"
+                  (click)="abrirModalAccion(turno, 'finalizar')">Finalizar</button>
+
+          <button class="btn btn-outline-primary btn-sm accion-historia"
+                  *ngIf="turno.estado === 'finalizado' && !historiaClinicaPorTurno.has(turno.id)"
+                  (click)="abrirModalHistoria(turno)">Cargar historia clínica</button>
+
+          <button class="btn btn-secondary btn-sm accion-historia"
+                  *ngIf="historiaClinicaPorTurno.has(turno.id)"
+                  (click)="verHistoriaClinica(turno)">
+            {{ historiaActivaId === turno.id ? 'Ocultar Historia' : 'Ver Historia Clínica' }}
+          </button>
            <!-- Ver historia clinica -->
         <button 
         *ngIf="historiaClinicaPorTurno.has(turno.id)" 
@@ -61,11 +81,15 @@
         </ng-container>
 
         <!-- Ver reseña y motivo -->
-        <button *ngIf="accionesPermitidas(turno).puedeVerResena" (click)="verResena(turno)">
+        <button class="btn btn-outline-dark btn-sm accion-reseña"
+        *ngIf="accionesPermitidas(turno).puedeVerResena"
+        (click)="verResena(turno)">
           {{ resenaActivaId === turno.id ? 'Ocultar Reseña' : 'Ver Reseña' }}
         </button>
 
-        <button *ngIf="turno.estado === 'cancelado' || turno.estado === 'rechazado'" (click)="verMotivoCancelacion(turno)">
+        <button class="btn btn-outline-warning btn-sm accion-motivo"
+                *ngIf="turno.estado === 'cancelado' || turno.estado === 'rechazado'"
+                (click)="verMotivoCancelacion(turno)">
           {{ motivoActivoId === turno.id ? 'Ocultar Motivo' : 'Ver Motivo' }}
         </button>
 
