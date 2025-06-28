@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Administrador, DatoExtra, Especialidades, Especialista, HistoriaClinica, Paciente } from '../../modelos/interface';
+import { Administrador, DatoExtra, Especialidades, Especialista, HistoriaClinica, Paciente, Turno } from '../../modelos/interface';
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -36,6 +36,9 @@ export class MiPerfilComponent {
   horarioGuardadoConExito:boolean = false;
   mostrarHistoria = false;
   historiaClinica: HistoriaClinica[] = [];
+  turnos: Turno[] = [];
+  especialistasTurno: Especialista[] = [];
+  especialistaSeleccionado: Especialista | null = null;
 
 
   constructor(private fb: FormBuilder)
@@ -121,14 +124,57 @@ export class MiPerfilComponent {
       }          
     }
     await this.cargarHistoriaClinica();
+    await this.cargarTurnosPacientes(); 
+    await this.cargarEspecialistasDesdeTurnos();   
     this.isLoading = false;
     console.log("El paciente es: ", this.paciente);    
     console.log("El especialista es: ", this.especialista);    
     console.log("Horarios del especialista: ", this.horarios);    
     console.log("Especialidades: ", this.especialidades_de_especialistas);    
     console.log("Historia clinica: ", this.historiaClinica);
-    
+    console.log("Turnos de paciente: ", this.turnos);    
   }
+  async cargarTurnosPacientes() 
+  {
+    if (!this.paciente?.id) 
+    {
+      console.warn('ID de paciente no encontrado en localStorage');
+      this.turnos = [];
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('turnos')
+      .select(`
+        id,
+        id_paciente,
+        id_especialista,
+        especialidad_id,
+        fecha,
+        hora,
+        estado,
+        resena
+      `)
+      .eq('id_paciente', this.paciente.id);
+
+    this.turnos = data ?? [];
+  }
+  async cargarEspecialistasDesdeTurnos() {
+    const idsUnicos = [...new Set(this.turnos.map(t => t.id_especialista))];
+  
+    const { data, error } = await supabase
+      .from('especialistas')
+      .select('*')
+      .in('id', idsUnicos);
+  
+    if (error) {
+      console.error('Error cargando especialistas de turnos:', error.message);
+    } else {
+      this.especialistasTurno = data || [];
+    }
+  }
+  
+  
   toggleFormulario() 
   {
     this.mostrarFormulario = !this.mostrarFormulario;
@@ -227,7 +273,7 @@ export class MiPerfilComponent {
       // 2. Buscar historia clínica para esos turnos
       const { data: historias, error: errorHistorias } = await supabase
         .from('historia_clinica')
-        .select('fecha, altura, peso, temperatura, presion, datos_extra')
+        .select('*')
         .in('id_turno', idsTurnos)
         .order('fecha', { ascending: false });
   
@@ -379,6 +425,27 @@ export class MiPerfilComponent {
       reader.readAsDataURL(blob)
     })
   }
+  async descargarPDFPorEspecialista() {
+    if (!this.especialistaSeleccionado || !this.paciente) return;
   
+    const turnosDelEspecialista = this.turnos.filter(
+      t => String(t.id_especialista) === String(this.especialistaSeleccionado!.id)
+    );
   
+    const idsTurnos = turnosDelEspecialista.map(t => t.id.toString());
+  
+    const historiasFiltradas = this.historiaClinica.filter(h =>
+      idsTurnos.some(id => id === h.id_turno?.toString())
+    );
+  
+    console.log('Turnos del especialista:', idsTurnos);
+    console.log('Historias encontradas:', historiasFiltradas.map(h => h.id_turno));
+  
+    if (historiasFiltradas.length === 0) {
+      alert('No se encontraron historias clínicas para este especialista.');
+      return;
+    }
+  
+    await this.generarPDF(historiasFiltradas);
+  }
 }

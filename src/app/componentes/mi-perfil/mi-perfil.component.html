@@ -12,6 +12,20 @@
       {{ mostrarHistoria ? 'Mostrar historia clínica' : 'Ocultar historia clínica' }}
     </button>      
     <br>
+    <div *ngIf="especialistasTurno.length > 0" class="selector-container">
+      <label for="especialistaSelector">Filtrar por especialista:</label>
+      <select id="especialistaSelector" [(ngModel)]="especialistaSeleccionado" class="selector-estilo">
+        <option [ngValue]="null" disabled selected>— Seleccione un especialista —</option>
+        <option *ngFor="let esp of especialistasTurno" [ngValue]="esp">
+          {{ esp.apellido }}, {{ esp.nombre }}
+        </option>
+      </select>
+    </div>    
+    <div *ngIf="especialistaSeleccionado">
+      <button class="boton-descarga" (click)="descargarPDFPorEspecialista()">
+        📄 Descargar historia clínica con {{ especialistaSeleccionado.nombre }} {{ especialistaSeleccionado.apellido }}
+      </button>
+    </div>
     <button class="boton-descarga" (click)="descargarHistoriaClinicaPDF()">
       📄 Descargar historia clínica PDF
     </button>       
