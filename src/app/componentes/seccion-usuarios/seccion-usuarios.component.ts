@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Administrador, EspecialidadDeEspecialista, Especialista, HistoriaClinica, Paciente, Usuario } from '../../modelos/interface';
+import { Administrador, EspecialidadDeEspecialista, Especialidades, Especialista, HistoriaClinica, Paciente, Usuario } from '../../modelos/interface';
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { FormsModule } from '@angular/forms';
@@ -39,6 +39,10 @@ export class SeccionUsuariosComponent implements OnInit
   historiasPorPaciente: HistoriaClinica[] = [];
   mostrarHistorias: boolean = false;
   pacienteActivoId: string | null = null;
+  especialidades: Especialidades[] = [];
+  asignaciones: EspecialidadDeEspecialista[] = [];
+
+  
   constructor(private router: Router) {}
 
   async ngOnInit() 
@@ -47,6 +51,8 @@ export class SeccionUsuariosComponent implements OnInit
     this.especialidadesDeEspecialistas = await this.obtenerEspecialidadesDeEspecialistas();
     this.cargando = false;    
     console.log(this.usuarios);
+    this.especialidades = await this.obtenerEspecialidades(); // función que falta agregar
+  this.asignaciones = this.especialidadesDeEspecialistas; // ya la estás trayendo
     
   }
 
@@ -78,6 +84,15 @@ export class SeccionUsuariosComponent implements OnInit
       ...especialidades_de_especialistas.map(especialidades_de_especialistas => ({ ...especialidades_de_especialistas }))
     ];
   }
+  async obtenerEspecialidades(): Promise<Especialidades[]> {
+    const { data, error } = await supabase.from('especialidades').select('*');
+    if (error) {
+      console.error('Error al obtener especialidades:', error);
+      return [];
+    }
+    return data ?? [];
+  }
+  
   obtenerTipoClase(usuario: Usuario): 'paciente' | 'especialista' | 'administrador' {
     if ('obra_social' in usuario) return 'paciente';
     if (this.esUsuarioEspecialista(usuario.id)) return 'especialista';
@@ -122,26 +137,60 @@ export class SeccionUsuariosComponent implements OnInit
   esUsuarioEspecialista(idUsuario: string): boolean {
     return this.especialidadesDeEspecialistas.some(e => e.id_especialista === idUsuario);
   }
+  
   exportarExcel(): void {
-    const usuariosExportar = this.usuarios.map(u => ({
-      Apellido: u.apellido,
-      Nombre: u.nombre,
-      Edad: u.edad,
-      DNI: u.dni,
-      Email: u.mail,
-      Tipo: this.obtenerTipoClase(u),
-      Aprobado: u.aprobado ? 'Sí' : 'No'
-    }));
+    type UsuarioExportable = Usuario & {
+      especialidad?: string;
+    };
+    const usuariosEnriquecidos: UsuarioExportable[] = this.usuarios.map(u => {
+      const tipo = this.obtenerTipoClase(u);
+  
+      if (tipo === 'especialista') {
+        const asignaciones = this.asignaciones.filter(a => a.id_especialista === u.id);
+        const nombresEspecialidades = asignaciones
+          .map(a => this.especialidades.find(e => e.id === a.id_especialidad)?.nombre)
+          .filter((nombre): nombre is string => !!nombre);
+  
+        return {
+          ...u,
+          especialidad: nombresEspecialidades.length ? nombresEspecialidades.join(', ') : '—'
+        };
+      }
+  
+      return u; // Paciente o Administrador
+    });
+  
+    const usuariosExportar = usuariosEnriquecidos.map(u => {
+      const tipo = this.obtenerTipoClase(u);
+      const base = {
+        Apellido: u.apellido,
+        Nombre: u.nombre,
+        Edad: u.edad,
+        DNI: u.dni,
+        Email: u.mail,
+        Tipo: tipo
+      };
+  
+      if (tipo === 'paciente') {
+        const paciente = u as Paciente;
+        return { ...base, 'Obra Social': paciente.obra_social ?? '—' };
+      } else if (tipo === 'especialista') {
+        return { ...base, Especialidades: u.especialidad ?? '—' };
+      }
+  
+      return base;
+    });
+  
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(usuariosExportar);
     const workbook: XLSX.WorkBook = {
-      Sheets: { 'Usuarios': worksheet },
+      Sheets: { Usuarios: worksheet },
       SheetNames: ['Usuarios']
     };
-
+  
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const blob: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
     FileSaver.saveAs(blob, 'listado_usuarios.xlsx');
-  }  
+  }
   async verHistoriaClinicaPorPaciente(pacienteId: string) {
     // Si ya está activo → cerrar
     if (this.pacienteActivoId === pacienteId) {
@@ -189,6 +238,59 @@ export class SeccionUsuariosComponent implements OnInit
     this.pacienteActivoId = null
     this.mostrarHistorias = false
     this.historiasPorPaciente = []
+  }
+  async exportarTurnosDelUsuario(usuario: Usuario): Promise<void> {
+    try {
+      const tipo = this.obtenerTipoClase(usuario);
+  
+      if (tipo !== 'paciente') {
+        console.warn('Solo se exportan turnos de pacientes.');
+        return;
+      }
+  
+      // Buscar los turnos
+      const { data: turnos, error } = await supabase
+        .from('turnos')
+        .select(`fecha, hora, estado, id_especialista, especialidad_id`)
+        .eq('id_paciente', usuario.id);
+  
+      if (error || !turnos?.length) {
+        console.warn('No se encontraron turnos.');
+        return;
+      }
+  
+      // Traer también especialistas y especialidades
+      const { data: especialistas } = await supabase.from('especialistas').select(`id, nombre, apellido`);
+      const { data: especialidades } = await supabase.from('especialidades').select(`id, nombre`);
+  
+      const dataExportar = turnos.map(turno => {
+        const especialista = especialistas?.find(e => e.id === turno.id_especialista);
+        const especialidad = especialidades?.find(e => e.id === turno.especialidad_id);
+        return {
+          Fecha: turno.fecha,
+          Hora: turno.hora,
+          Estado: turno.estado,
+          Especialidad: especialidad?.nombre ?? '—',
+          Profesional: especialista
+            ? `${especialista.apellido}, ${especialista.nombre}`
+            : '—'
+        };
+      });
+      console.log(dataExportar);
+      
+  
+      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataExportar);
+      const workbook: XLSX.WorkBook = {
+        Sheets: { Turnos: worksheet },
+        SheetNames: ['Turnos']
+      };
+  
+      const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const blob: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+      FileSaver.saveAs(blob, `turnos_${usuario.apellido}_${usuario.nombre}.xlsx`);
+    } catch (err) {
+      console.error('❌ Error al exportar turnos:', err);
+    }
   }
   
 }

@@ -1,5 +1,5 @@
 <div class="nav">
-    <button class="btn btn-outline-primary" routerLinkActive="selected" routerLink="home">Inicio</button>
+    <button class="btn btn-outline-primary me-2" routerLinkActive="selected" routerLink="home">Inicio</button>
     <button *ngIf="isLoggedIn" class="btn btn-outline-danger" (click)="logout()">Cerrar Sesión</button>    
 </div>
 <div [@routeAnimations]="prepareRoute(outlet)">

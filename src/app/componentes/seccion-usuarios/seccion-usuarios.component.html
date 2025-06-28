@@ -1,9 +1,13 @@
 <title>Sección usuarios</title>
 <h1>Listado de usuarios</h1>
+
+<!-- Loading Spinner -->
 <div *ngIf="cargando" class="spinner-container">
   <div class="spinner"></div>
   <p>Cargando datos...</p>
-</div> 
+</div>
+
+<!-- Filtros -->
 <div class="d-flex gap-2 mb-3 align-items-center" *ngIf="!cargando">
   <label for="campo">Buscar por:</label>
   <select [(ngModel)]="campoSeleccionado" id="campo" class="form-select w-auto">
@@ -15,81 +19,45 @@
   <input type="text" [(ngModel)]="filtro" class="form-control" placeholder="Escribí para filtrar..." />
   <button class="btn btn-primary" (click)="irRegistro()">Registrar nuevo usuario</button>
 </div>
-<div class="table-responsive" *ngIf="!cargando">
-    <table>         
-        <thead>
-          <tr>
-            <th>Apellido</th>
-            <th>Nombre</th>
-            <th>Edad</th>
-            <th>DNI</th>
-            <th>Email</th>
-            <th>Aprobado</th>
-            <th>Foto de perfil</th>
-            <th>Historia Clínica</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let usuario of usuarios | filtro: filtro : campoSeleccionado | ordenar" [appDirectivaColorRol]="obtenerTipoClase(usuario)">
-            <td>{{ usuario.apellido }}</td>
-            <td>{{ usuario.nombre }}</td>
-            <td>{{ usuario.edad }}</td>
-            <td>{{ usuario.dni | dni}}</td>
-            <td>{{ usuario.mail }}</td>            
-            <td>
-                <button [ngClass]="usuario.aprobado ? 'btn-habilitado' : 'btn-deshabilitado'" (click)="habilitarUsuario(usuario)">
-                  {{ usuario.aprobado ? 'Habilitado' : 'No habilitado' }} 
-                </button>
-              </td>              
-            <td>
-              <img *ngIf="usuario.imagen_perfil" [src]="usuario.imagen_perfil" 
-                    alt="Foto de {{ usuario.nombre }}" 
-                    appDirectivaZoomFotos class="img-perfil">
-            </td>
-            <td>
-              <button class="btn btn-outline-primary btn-sm"
-                      *ngIf="obtenerTipoClase(usuario) === 'paciente'" 
-                      (click)="verHistoriaClinicaPorPaciente(usuario.id)">
-                      {{ pacienteActivoId === usuario.id ? 'Ocultar Historia' : 'Ver Historia Clínica' }}
-              </button>
-            </td>      
-          </tr>
-        </tbody>
-    </table>
-    
-    
-    <div class="text-end mt-3">
-      <button class="btn btn-success" (click)="exportarExcel()">
-        Descargar listado
-      </button>
-    </div>    
-  </div>
-  <!-- Mostrar historias clínicas si hay -->
-<div *ngIf="mostrarHistorias && historiasPorPaciente.length > 0" class="mt-4">
-  <h5>Historia Clínica</h5>
-  <div *ngFor="let historia of historiasPorPaciente" class="card mb-3">
-    <div class="card-body">
-      <p><strong>Fecha:</strong> {{ historia.fecha | date: 'dd/MM/yyyy HH:mm' }}</p>
-      <p><strong>Altura:</strong> {{ historia.altura }} m</p>
-      <p><strong>Peso:</strong> {{ historia.peso }} kg</p>
-      <p><strong>Temperatura:</strong> {{ historia.temperatura }} °C</p>
-      <p><strong>Presión arterial:</strong> {{ historia.presion }}</p>
 
-      <div *ngIf="historia.datos_extra?.length">
-        <p><strong>Datos adicionales:</strong></p>
-        <ul>
-          <li *ngFor="let dato of historia.datos_extra">
-            {{ dato.clave }}: {{ dato.valor }}
-          </li>
-        </ul>
+<!-- Cards de usuarios -->
+<div class="row g-3" *ngIf="!cargando">
+  <div
+    class="col-sm-6 col-md-4 col-lg-3"
+    *ngFor="let usuario of usuarios | filtro: filtro : campoSeleccionado | ordenar"
+  >
+    <div class="card h-100 border shadow-sm" [appDirectivaColorRol]="obtenerTipoClase(usuario)">
+      <div class="card-body">
+        <h5 class="card-title">{{ usuario.apellido }}, {{ usuario.nombre }}</h5>
+        <p class="card-text">
+          <strong>Email:</strong> {{ usuario.mail }}<br />
+          <strong>DNI:</strong> {{ usuario.dni | dni }}<br />
+          <strong>Edad:</strong> {{ usuario.edad }} años<br />
+          <strong>Tipo:</strong> {{ obtenerTipoClase(usuario) | titlecase }}<br />          
+        </p>
+
+        <div *ngIf="usuario.imagen_perfil" class="mb-2 text-center">
+          <img
+            [src]="usuario.imagen_perfil"
+            [alt]="'Foto de ' + usuario.nombre"
+            class="img-thumbnail"
+            style="max-height: 100px;"
+            appDirectivaZoomFotos class="img-perfil"
+          />
+        </div>     
+
+        <button
+          *ngIf="obtenerTipoClase(usuario) === 'paciente'"
+          class="btn btn-success w-100"
+          (click)="exportarTurnosDelUsuario(usuario)">
+          📥 Exportar turnos
+        </button>
       </div>
     </div>
   </div>
 </div>
-
-<!-- Mensaje si el paciente no tiene historia -->
-<div *ngIf="mostrarHistorias && historiasPorPaciente.length === 0" class="alert alert-warning mt-4">
-  Este paciente aún no tiene historia clínica registrada.
+<div class="text-center mt-3 w-100">
+  <button class="btn btn-success" (click)="exportarExcel()">
+    Descargar todos los usuarios
+  </button>
 </div>
-
-  
