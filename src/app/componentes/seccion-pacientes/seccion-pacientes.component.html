@@ -1,0 +1,35 @@
+<title>Sección pacientes</title>
+<div *ngIf="!pacienteSeleccionado">
+    <h1>Pacientes Atendidos</h1>
+    <div class="paciente-lista">
+        <button
+            *ngFor="let paciente of pacientes"
+            mat-icon-button
+            class="paciente-btn"
+            (click)="seleccionarPaciente(paciente)"
+        >
+            <img
+            [src]="paciente.imagen_perfil || 'assets/default-user.png'"
+            alt="avatar"
+            class="paciente-avatar"
+            />
+            <span>{{ paciente.nombre }} {{ paciente.apellido }}</span>
+        </button>
+    </div>
+</div>  
+
+<div *ngIf="pacienteSeleccionado">
+    <h1>Detalle de los turnos de la paciente {{ pacienteSeleccionado.apellido }}, {{ pacienteSeleccionado.nombre }}</h1>
+    <button (click)="volver()">← Volver</button>  
+    <div *ngIf="cargandoTurnos" class="spinner-container">
+        <div class="spinner"></div>
+    </div>    
+    <div *ngIf="!cargandoTurnos">
+        <div *ngFor="let turno of turnosDelPaciente" class="turno-card">
+          <p><strong>Fecha:</strong> {{ turno.fecha | date:'dd/MM/yyyy' }} - {{ turno.hora.substring(0, 5) }}</p>
+          <p><strong>Especialista:</strong> {{ turno.especialista }}</p>
+          <p><strong>Especialidad:</strong> {{ turno.especialidad }}</p>
+          <p><strong>Reseña:</strong> {{ turno.resena || 'Sin reseña' }}</p>
+        </div>
+    </div>    
+</div>

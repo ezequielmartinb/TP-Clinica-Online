@@ -1,0 +1,89 @@
+/* Lista general */
+.paciente-lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem 0;
+    justify-content: center;
+  }
+  
+  /* Botón individual de paciente */
+  .paciente-btn {
+    display: flex;
+    align-items: center;
+    background-color: #007bff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s;
+  }
+  
+  .paciente-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.03);
+  }
+  
+  /* Avatar de paciente */
+  .paciente-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 0.75rem;
+    border: 2px solid #ccc;
+  }
+  
+  /* Contenedor del historial del paciente */
+  .turno-card {
+    background-color: #ffffff;
+    border-left: 5px solid #007acc;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    margin: 1rem 0;
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    transition: box-shadow 0.2s ease-in-out;
+  }
+  
+  .turno-card:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+  
+  .turno-card p {
+    margin: 0.25rem 0;
+  }
+  
+  /* Botón volver */
+  button {
+    background-color: #007acc;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin: 1rem 0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+  
+  button:hover {
+    background-color: #005ea2;
+  }
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+  }
+  
+  .spinner {
+    width: 50px; height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

@@ -8,6 +8,7 @@
       <button class="btn btn-outline-primary" *ngIf="!usuarioAutenticado" routerLink="/login">Login</button>
       <button class="btn btn-outline-primary" *ngIf="!usuarioAutenticado" routerLink="/registro">Registro</button>
       <button class="btn btn-outline-primary" *ngIf="usuarioAutenticado" routerLink="/mi-perfil">Mi Perfil</button>
+      <button class="btn btn-outline-primary" *ngIf="usuarioAutenticado && rol == 'especialista'" routerLink="/seccion-paciente">Sección pacientes</button>
       <button class="btn btn-outline-primary" *ngIf="usuarioAutenticado && rol !== 'especialista'" routerLink="/solicitar-turnos">Solicitar turnos</button>
       <button class="btn btn-outline-primary" *ngIf="usuarioAutenticado && !isAdmin" routerLink="/mis-turnos">Mis Turnos</button>
       <button class="btn btn-outline-primary" *ngIf="isAdmin" routerLink="/admin/turnos">Turnos</button>

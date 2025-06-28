@@ -34,6 +34,11 @@ export const routes: Routes =
         canActivate: [sessionGuard]
     },   
     {
+        path:'seccion-paciente',
+        loadComponent: () => import('./componentes/seccion-pacientes/seccion-pacientes.component').then(s=> s.SeccionPacientesComponent),
+        canActivate: [sessionGuard]
+    },   
+    {
         path:'solicitar-turnos',
         loadComponent: () => import('./componentes/solicitar-turnos/solicitar-turnos.component').then(s=> s.SolicitarTurnosComponent),
         canActivate: [sessionGuard]

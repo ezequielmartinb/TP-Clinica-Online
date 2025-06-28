@@ -76,5 +76,13 @@ export interface HorarioEspecialista {
     datos_extra?: DatoExtra[] // hasta 3 campos JSONB definidos por el especialista
   }
   
+export interface TurnoEnriquecido {
+  fecha: string;
+  hora: string;
+  resena?: string;
+  especialista: string;
+  especialidad: string;
+}
+
   
   
