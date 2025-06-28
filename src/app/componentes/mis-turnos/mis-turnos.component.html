@@ -8,6 +8,7 @@
   <input *ngIf="rolUsuario === 'paciente'" type="text" [(ngModel)]="filtroEspecialistaTexto" class="form-control mb-1" placeholder="Filtrar por especialista..." />
   <input *ngIf="rolUsuario === 'especialista'" type="text" [(ngModel)]="filtroPacienteTexto" class="form-control" placeholder="Filtrar por apellido de paciente..." />
   <input *ngIf="rolUsuario === 'especialista'" type="text" [(ngModel)]="filtroDatoExtra" class="form-control" placeholder="Filtrar por dato extra del paciente..." />
+  <input *ngIf="rolUsuario === 'paciente'" type="text" [(ngModel)]="filtroDatoExtra" class="form-control" placeholder="Filtrar por dato extra del paciente..." />
 </div>
 
 <!-- Tabla de turnos -->
@@ -28,7 +29,8 @@
       | filtroEspecialidad:(rolUsuario === 'paciente' ? filtroEspecialidadTexto : ''):especialidades 
       | filtroEspecialista:(rolUsuario === 'paciente' ? filtroEspecialistaTexto : ''):especialistas 
       | filtroPaciente:(rolUsuario === 'especialista' ? filtroPacienteTexto : ''):pacientes
-      | filtroDatoExtra:(rolUsuario === 'especialista' ? filtroDatoExtra : ''):historiaClinicaMap">
+      | filtroDatoExtra:(rolUsuario === 'especialista' ? filtroDatoExtra : ''):historiaClinicaMap
+      | filtroDatoExtra:(rolUsuario === 'paciente' ? filtroDatoExtra : ''):historiaClinicaMap">
       
       <td>{{ turno.fecha | date:'dd/MM/yyyy' }}</td>
       <td>{{ turno.hora.substring(0, 5) }}</td>
