@@ -1,18 +1,30 @@
-<title>Informes</title>
-<div class="botones-informes text-center mt-4">
-    <button class="btn btn-primary m-2" [routerLink]="['logs']">
-        📋 Log de ingresos
-    </button>
-    <button class="btn btn-info m-2" [routerLink]="['turnos-especialidad']">
-        🩺 Turnos por especialidad
-    </button>
-    <button class="btn btn-success m-2" [routerLink]="['turnos-dia']">
-        📅 Turnos por día
-    </button>
-    <button class="btn btn-warning m-2" [routerLink]="['turnos-por-medio']">
-        📨 Turnos por medio (lapso)
-    </button>
-    <button class="btn btn-secondary m-2" [routerLink]="['turnos-finalizados']">
-        ✅ Turnos finalizados (lapso)
-    </button>
-</div>
+<div class="container mt-5">
+    <h3 class="text-center mb-4">📊 Informes</h3>
+    <div class="row g-3 justify-content-center">
+      <div class="col-md-4 col-sm-6">
+        <button class="btn btn-primary w-100" [routerLink]="['logs']">
+          📋 Log de ingresos
+        </button>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <button class="btn btn-info w-100" [routerLink]="['turnos-especialidad']">
+          🩺 Turnos por especialidad
+        </button>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <button class="btn btn-success w-100" [routerLink]="['turnos-dia']">
+          📅 Turnos por día
+        </button>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <button class="btn btn-warning w-100" [routerLink]="['turnos-por-medio']">
+          📨 Turnos por medio (lapso)
+        </button>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <button class="btn btn-secondary w-100" [routerLink]="['turnos-finalizados']">
+          ✅ Turnos finalizados (lapso)
+        </button>
+      </div>
+    </div>
+  </div>

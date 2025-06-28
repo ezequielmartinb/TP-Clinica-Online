@@ -5,13 +5,14 @@ import jsPDF from 'jspdf';
 import { environment } from '../../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
+import { RouterLink } from '@angular/router';
 
 const supabase = createClient(environment.apiUrl, environment.publicAnonKey)
 
 
 @Component({
   selector: 'app-logs',
-  imports: [CommonModule, BaseChartDirective],
+  imports: [CommonModule, BaseChartDirective, RouterLink],
   templateUrl: './logs.component.html',
   styleUrl: './logs.component.css'
 })

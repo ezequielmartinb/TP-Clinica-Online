@@ -73,6 +73,11 @@ export const routes: Routes =
         canActivate: [authGuard]
     },
     {
+        path:'admin/informes/turnos-especialidad',
+        loadComponent: () => import('./componentes/informes/turnos-especialidad/turnos-especialidad.component').then(t=> t.TurnosEspecialidadComponent),
+        canActivate: [authGuard]
+    },
+    {
         path:'**',
         component:ErrorComponent
     }

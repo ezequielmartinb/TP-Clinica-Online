@@ -1,0 +1,13 @@
+.chart-container {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+  
+  table thead th {
+    font-size: 1rem;
+  }
+  
+  table tbody td {
+    vertical-align: middle;
+  }

@@ -1,1 +1,42 @@
-<p>turnos-especialidad works!</p>
+<title>Turnos por especialidad</title>
+<h1 class="text-center mt-4 mb-4 text-primary">Turnos por Especialidad</h1>
+<button class="btn btn-outline-secondary px-4 py-2" [routerLink]="['/admin/informes']">
+    ⬅️ Atrás
+</button>
+<!-- Gráfico de barras -->
+<div class="chart-container rounded shadow-sm p-3 bg-white" style="height: 400px;">
+    <canvas
+    #chartCanvas
+    baseChart
+    [type]="'bar'"
+    [data]="barChartData"
+    [options]="barChartOptions">
+  </canvas>  
+</div>
+
+<!-- Tabla -->
+<table class="table table-hover table-bordered table-striped mt-5 shadow-sm">
+  <thead class="table-primary">
+    <tr>
+      <th class="text-center">Especialidad</th>
+      <th class="text-center">Cantidad de Turnos</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let dato of datosTabla">
+      <td class="text-center fw-medium">{{ dato.nombre }}</td>
+      <td class="text-center fw-bold">{{ dato.cantidad }}</td>
+    </tr>
+  </tbody>
+</table>
+<div class="alert alert-info mt-4 shadow-sm">
+    {{ generarInformeEspecialidades() }}
+</div>
+<div class="text-center mt-4">
+    <button class="btn btn-success px-4 py-2 fw-semibold" (click)="descargarPDF()">
+        📄 Descargar PDF
+    </button>
+</div>
+
+  
+  
