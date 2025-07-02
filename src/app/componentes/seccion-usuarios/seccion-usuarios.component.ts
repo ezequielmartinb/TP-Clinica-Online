@@ -12,13 +12,14 @@ import { OrdenarPipe } from '../../pipes/ordenar.pipe';
 import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
+import { HoverSombraDirective } from '../../directivas/hover-sombra.directive';
 
 
 const supabase = createClient(environment.apiUrl, environment.publicAnonKey)
 
 @Component({
   selector: 'app-seccion-usuarios',
-  imports: [FormsModule, CommonModule, DirectivaZoomFotosDirective, DirectivaColorRolDirective, DniPipe, FiltroPipe, OrdenarPipe],
+  imports: [FormsModule, CommonModule, DirectivaZoomFotosDirective, DirectivaColorRolDirective, DniPipe, FiltroPipe, OrdenarPipe, HoverSombraDirective],
   templateUrl: './seccion-usuarios.component.html',
   styleUrl: './seccion-usuarios.component.css'
 })
